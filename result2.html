@@ -1,0 +1,2989 @@
+<!DOCTYPE html>
+
+<html>
+	<head >
+		<title >
+		</title>
+
+
+	</head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	
+	<style>
+		.bigbtn {
+			transform: skewY(-8.5deg);
+			margin-bottom: 60px;
+			margin-top: 60px;
+			width: 100%;
+			box-shadow:
+				0px 8px 5px -5px rgba(0, 0, 0, 0.4),
+				0px -8px 5px -5px rgba(0, 0, 0, 0.4);
+			height: 120px;
+
+			align-items: center;
+			justify-content: center;
+			display: flex;
+		}
+
+		.unskew {
+			transform: skewY(8.5deg);
+		}
+
+		.with_infos > .infos {
+			display: none;
+		}
+
+		.with_infos:hover > .infos {
+			display: block;
+		}
+
+		.infos {
+			position: fixed;
+			left: 105%;
+			background-color: rgb(255, 255, 255);
+			z-index: 100000 !important;
+			padding: 20px;
+			white-space: nowrap;
+			border-radius: 12px;
+			box-shadow: 0px 0px 5px 0px black;
+		}
+
+	</style>
+
+	<!--script>
+		await new Promise((resolve, reject)=>{
+			window.addEventListener('load', resolve)
+		})
+	</script-->
+
+	<body
+		style="
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			width: 100%;
+			overflow: hidden;
+			/*background-color:rgb(42, 42, 42);*/
+			background:
+				linear-gradient(190deg, rgba(16,16,16,1), rgba(30,30,30,1) 70.71%),
+            	linear-gradient(315deg, rgba(15,15,15,1), rgba(30,30,30,.5) 70.71%),
+            	linear-gradient(110deg, rgba(14,14,14,1), rgba(30,30,30,.5) 70.71%);
+			
+			"
+		>
+
+		<!--
+			<canvas
+				id = "drop_on_me"
+				style="
+				width:200px;
+				height:200px;
+				background-color:rgba(100, 100, 170, 0.8);
+				position:relative;
+				left:50%;
+				top:50%;
+				transform: translate(-50%, -50%);
+				border-radius: 10px
+				"
+			>
+			
+			</canvas>-->
+
+
+		<div
+			style = "
+				padding: 0 auto;
+			"
+		>
+			<div
+				style ="
+				height:100%;
+				/*width: 100%;*/
+				width: auto;
+				/*flex: 1 2;*/
+				display: flex;
+				flex-direction: row;
+
+				justify-content: center;
+				align-items: center;
+				"
+			>
+
+				
+				<div
+					style="
+						/*min-width: clac(min(10%, 200px));*/
+						/*float:left;*/
+						/*height:200px;*/
+						height:100%;
+						width:calc(min(130px,25%));
+						/*flex: 100px;*/
+						/*position:absolute;*/
+						position:relative;
+						/*background-color:rgb(100, 100, 100, .5);*/
+						background: linear-gradient(rgb(40, 40, 40), rgb(50, 50, 50),rgb(52, 52, 52), rgb(50, 50, 50), rgb(40, 40, 40));
+						/*padding-right: 15px;*/
+						/*margin-left: 15px;*/
+						/*box-shadow: 10px 0 10px -2px rgba(0, 0, 0, .4);*/
+						box-shadow: 0px 0 8px 5px rgba(0, 0, 0, .4);
+						z-index: 100000; /* pour voir les infos boxs lorsque hover */
+					"
+				>
+					<div
+						style="
+							position: absolute;
+							width: 100%;
+							top: 50%;
+							left: 50%;
+							-moz-transform: translateX(-50%) translateY(-50%);
+							-webkit-transform: translateX(-50%) translateY(-50%);
+							transform: translateX(-50%) translateY(-50%);
+						"
+					>
+
+						<div
+							class = "bigbtn with_infos"
+							id = "btn_add_csv_container"
+							style="
+								position: relative;
+								cursor: pointer;
+								/*background:
+									linear-gradient(.25turn, rgb(41, 37, 19), rgb(220, 185, 60) 3.5%, rgb(220, 185, 60) 96.5%, rgb(41, 37, 19));*/
+								background:
+									/*linear-gradient(.25turn, rgb(41, 37, 19), rgb(49, 153, 96) 3.5%, rgb(50, 143, 92) 96.5%, rgb(41, 37, 19));*/
+									/*linear-gradient(.25turn, rgb(5, 27, 5), rgb(20, 94, 17) 3.5%, rgb(20, 94, 17) 96.5%, rgb(5, 27, 5));*/
+									linear-gradient(.25turn, rgb(41, 37, 19), rgb(194, 166, 62) 3.5%, rgb(180, 151, 47) 96.5%, rgb(41, 37, 19));
+							"
+						>
+
+							<div
+								class = "infos unskew"
+								style = "
+									
+								"
+							>
+								ajouter un fichier csv
+								<ul>
+									<li>des csv avec des données dépendantes (référence les mêmes personnes) doivent être traités dans une même session</li>
+									<li>des csv avec des données indépendantes (référence des personnes distinctes) peuvent être traité dans différentes sessions</li>
+								<ul>
+							</div>
+							
+
+							<!--input
+								id="file_input_add_csv"
+								type = "file"
+								accept="*,.csv"
+								multiple
+								style="
+								width: 100%;
+								height: 100%;
+								opacity: 0;
+								cursor: pointer;
+								position: absolute;
+								display: none;
+								"
+							>
+								<script>
+
+									const file_input_add_csv = document.getElementById('file_input_add_csv')
+									
+									/*file_input_add_csv.addEventListener('click', ev => {
+										post('selct_new_csv_file', [])
+										update_liste_des_csv()
+									})*/
+
+									file_input_add_csv.addEventListener("change", function(ev) {
+										log(this.files)
+										files = []
+										for(file of this.files) {
+											files.push(file.name)
+										}
+										post('select_new_csv_files', files)
+										update_liste_des_csv()
+									}, false)
+
+								</script>
+							</input-->
+
+							<canvas
+								id="btn_add_csv"
+								class="unskew"
+								style ="
+								
+								
+								/*height: 100%;
+								width: 100%;
+								padding-left: 0;
+								padding-right: 0;
+								margin-left: auto;
+								margin-right: auto;
+								display: block;*/
+								/*pointer-events: none;*/
+								position: absolute;
+								width: 100%;
+								aspect-ratio: 4 / 3;
+								"
+							>
+								<script>
+									const btn_add_csv = document.getElementById('btn_add_csv')
+									const btn_add_csv_container = document.getElementById('btn_add_csv_container')
+
+									function scroll_down_liste_des_csv() {
+										const liste_des_csv = document.getElementById('liste_des_csv')
+										//
+										
+										liste_des_csv.scrollTo({
+											left: 0,
+											top: liste_des_csv.scrollHeight + 200,
+											behavior: 'smooth'
+										})
+										/*function cb_scroll(){ on_scroll_end() }// save scroll
+										liste_des_csv.addEventListener('scroll', cb_scroll)
+										setTimeout(()=>{ liste_des_csv.removeEventListener('scroll', cb_scroll) }, 1000)*/
+									}
+									
+									btn_add_csv_container.addEventListener('click', ev => {
+										//document.getElementById('file_input_add_csv').click()
+										post('select_new_csv_files', [])
+										.then(async (res) => await res)
+										.then(()=>{
+											//update_liste_des_csv()
+										}).catch(()=>{
+											
+										}).finally(()=>{
+											update_liste_des_csv()
+											scroll_down_liste_des_csv()
+										})
+									})
+
+									{
+
+										const w = btn_add_csv.width = window.devicePixelRatio * btn_add_csv.clientWidth
+										const h = btn_add_csv.height = window.devicePixelRatio * btn_add_csv.clientHeight
+
+										ctx = btn_add_csv.getContext('2d')
+
+										ctx.lineCap = "round"
+
+										
+
+										const x0 = .22*w
+										const x1 = .42*w
+										const x2 = .46*w
+										const x3 = .75*w
+										const x = x0, X = x3
+
+										const y0 = .15*h
+										const y1 = .25*h
+										const y2 = .85*h
+										const y = y0, Y = y2
+
+										//var e = .04* Math.random() * Math.min(w, h)
+										var e = .05 * Math.min(w, h)
+
+										run_path = (dx, dy, sym_vert, level) => {
+											ctx.beginPath()
+
+											// BR
+											ctx.moveTo(x3, y2-e)
+											ctx.quadraticCurveTo(x3, y2, x3-e, y2)
+
+											// BL
+											ctx.lineTo(x0+e, y2)
+											ctx.quadraticCurveTo(x0, y2, x0, y2-e)
+
+											var y_0 = y0
+											var y_1 = y1
+
+											if(sym_vert) {
+												y_0 = y1
+												y_1 = y0
+											}
+
+											if (!level) {
+												y_1 = y_0 = y0
+											}
+
+											// TL
+											ctx.lineTo(x0-dx, y_0+dy+e)
+											ctx.quadraticCurveTo(x0-dx, y_0+dy, x0+e, y_0+dy)
+
+											ctx.lineTo(x1, y_0+dy)
+											ctx.lineTo(x2, y_1+dy)
+
+											// TR
+											ctx.lineTo(x3+dx-e, y_1+dy)
+											ctx.quadraticCurveTo(x3+dx, y_1+dy, x3+dx, y_1+dy+e)
+
+											ctx.closePath()
+										}
+
+										ctx.lineWidth = .02*w
+										ctx.strokeStyle = 'rgb(118, 99, 31)'
+										run_path(0,0,true, true)
+										ctx.stroke()
+
+										ctx.fillStyle = "rgb(228, 181, 84)";
+										run_path(0,0,true, true)
+										ctx.fill();
+
+										{
+
+											dx = .03*w
+											dy = .135*h
+
+											run_plus_path = (dx) => {
+												ctx.beginPath()
+												
+												const r = .1*Math.min(w,h)
+
+												const cx = .5*w
+												const cy = .5*h
+
+												const mix = (a, b, t) => a + t*(b-a)
+
+												const strech_x = (x_val) => {
+													return mix(x_val, x_val + dx, Math.abs((x_val-cx))/(.5*(X-x)))
+												}
+
+												const tranform = (xi, yi)=>{
+													return [
+														mix(xi, xi + (xi > cx ? dx : -dx), (Y-yi)/(Y-y)),
+														yi-.1*h
+													]
+												}
+
+												ctx.moveTo(...tranform(x+e, cy+r))
+												ctx.quadraticCurveTo(...tranform(x, cy+r), ...tranform(x, cy+r-e))
+												ctx.lineTo(...tranform(x, cy-r+e))
+												ctx.quadraticCurveTo(...tranform(x, cy-r), ...tranform(x+e, cy-r))
+
+												ctx.lineTo(...tranform(cx-r, cy-r))
+
+												ctx.lineTo(...tranform(cx-r, y+e))
+												ctx.quadraticCurveTo(...tranform(cx-r, y), ...tranform(cx-r+e, y))
+												ctx.lineTo(...tranform(cx+r-e, y))
+												ctx.quadraticCurveTo(...tranform(cx+r, y), ...tranform(cx+r, y+e))
+
+												ctx.lineTo(...tranform(cx+r, cy-r))
+
+												ctx.lineTo(...tranform(X-e, cy-r))
+												ctx.quadraticCurveTo(...tranform(X, cy-r), ...tranform(X, cy-r+e))
+												ctx.lineTo(...tranform(X, cy+r-e))
+												ctx.quadraticCurveTo(...tranform(X, cy+r), ...tranform(X-e, cy+r))
+
+												ctx.lineTo(...tranform(cx+r, cy+r))
+
+												ctx.lineTo(...tranform(cx+r, Y-e))
+												ctx.quadraticCurveTo(...tranform(cx+r, Y), ...tranform(cx+r-e, Y))
+												ctx.lineTo(...tranform(cx-r+e, Y))
+												ctx.quadraticCurveTo(...tranform(cx-r, Y), ...tranform(cx-r, Y-e))
+
+												ctx.lineTo(...tranform(cx-r, cy+r))
+
+												ctx.closePath()
+											}
+
+											ctx.lineWidth = .015*w
+											ctx.strokeStyle = 'rgb(25, 100, 25)'
+											run_plus_path(dx)
+											ctx.stroke()
+
+											var gradient = ctx.createLinearGradient(0, y0, 0, y2);
+											gradient.addColorStop(0, 'rgb(25, 200, 25)');
+											gradient.addColorStop(1, 'rgb(130, 130, 130)');
+											ctx.fillStyle = gradient;
+											run_plus_path(dx)
+											ctx.fill();
+
+											/*ctx.font = (.115*w)+"px serif"
+											var gradient = ctx.createLinearGradient(0, y0, 0, y2)
+											gradient.addColorStop(0, 'rgb(50, 50, 50)')
+											gradient.addColorStop(1, 'rgb(50, 50, 50)')
+											ctx.fillStyle = gradient
+											ctx.textAlign = 'right'
+											ctx.textBaseline = "hanging"
+											ctx.fillText("result", x3+.3*dx, y0+1.15*dy)*/
+										}
+
+										ctx.lineWidth = .02*w
+										ctx.strokeStyle = 'rgba(118, 99, 31, .9)'
+										run_path(.04*w,.2*h,false, true)
+										ctx.stroke()
+
+										var gradient = ctx.createLinearGradient(0, y0, 0, y2)
+										gradient.addColorStop(0, 'rgba(227, 197, 136, .7)')
+										gradient.addColorStop(1, 'rgba(198, 151, 54, .7)')
+										ctx.fillStyle = gradient;
+										
+										run_path(.04*w,.2*h,false, true)
+										ctx.fill()
+
+									}
+								</script>
+
+							</canvas>
+
+
+							
+
+							
+
+						</div>
+
+
+						<div
+							class = "bigbtn with_infos"
+							style="
+								background: linear-gradient(.25turn, rgb(56, 56, 56), rgb(180, 180, 180) 3.5%, rgb(160, 160, 160) 96.5%, rgb(56, 56, 56));
+								z-index: 100000 !important;
+							"
+						>
+
+							<div
+								class = "infos unskew"
+								style = "
+								
+								"
+							>
+								<b>valeurs protectrices:</b> 0.001 à 0.1
+								<br><b>protection moyenne:</b> 1 à 5
+								<br><b>valeurs non protectrices:</b> 10 et +
+							</div>
+
+
+							<table
+								style="
+								margin : 0;
+								padding : 0;
+								width: 100%;
+								"
+							>
+								<tbody>
+									<tr>
+										<td>
+											
+											<div
+												class="unskew"
+												style="
+												width: 100%;
+												font-size: 18px;
+												font-weight:bold;
+												text-align: center;
+												padding-top: 20px;
+												padding-bottom: 5px;
+												"
+											>
+												total privacy budget
+											</div>
+
+										</td>
+									</tr>
+									<tr>
+										<td>
+											
+											<div
+												style="
+													margin: 0 auto;
+													padding-bottom: 20px;
+												"
+											>
+												<input
+													id="input_privacy_budget"
+													class="unskew"
+													type="number"
+													style="
+													width:50px;
+													text-align:center;
+													display: block;
+													margin : 0 auto;
+													border-width: 2px;
+													"
+												>
+											
+												</input>
+
+											</div>
+
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<!--div
+								class="unskew"
+								style="
+								width: 100%;
+								font-size: 18px;
+								font-weight:bold;
+								text-align: center;
+								padding-top: 20px;
+								padding-bottom: 5px;
+								"
+							>
+								privacy budget
+							</div>
+
+							<div
+							style="
+								margin: 0 auto;
+								padding-bottom: 20px;
+							"
+							>
+								<input
+									id="input_privacy_budget"
+									class="unskew"
+									type="number"
+									style="
+									width:50px;
+									text-align:center;
+									display: block;
+									margin : 0 auto;
+									border-width: 2px;
+									"
+								>
+							
+								</input>
+
+							</div-->
+
+						</div>
+
+
+
+						<div
+							class = "bigbtn with_infos"
+							id="btn_start_tumult_session"
+							style="
+							background:
+								/*linear-gradient(.25turn, rgb(19, 41, 21), rgb(40, 126, 30) 3.5%, rgb(51, 147, 40) 96.5%, rgb(19, 41, 21));*/
+								/*linear-gradient(.25turn, rgb(19, 41, 21), rgb(33, 107, 25) 3.5%, rgb(33, 107, 25) 96.5%, rgb(19, 41, 21));*/
+								linear-gradient(.25turn, rgb(19, 41, 21), rgb(48, 155, 36) 3.5%, rgb(48, 155, 36) 96.5%, rgb(19, 41, 21));
+							/*background: linear-gradient(.25turn, rgb(41, 37, 19), rgb(49, 153, 96) 3.5%, rgb(50, 143, 92) 96.5%, rgb(41, 37, 19));*/
+							cursor: pointer;
+							"
+							
+						>
+
+							<div
+								class = "infos unskew"
+								style = "
+									
+								"
+							>
+								tout generer
+							</div>
+
+							<canvas
+								id="canvas_btn_start_tumult_session"
+								class="unskew"
+								style ="
+									background-color: rgb(52, 180, 37, 0);
+									/*height: 100%;
+									width: 100%;
+									padding-left: 0;
+									padding-right: 0;
+									margin-left: auto;
+									margin-right: auto;
+									display: block;*/
+									width: 100%;
+									aspect-ratio: 4 / 3;
+								
+								"
+							>
+							</canvas>
+
+						</div>
+
+
+
+						<div>
+
+							<div
+								id="btn_open_result_folder"
+								class = "bigbtn with_infos"
+								style="
+									background:
+										linear-gradient(.25turn, rgb(41, 37, 19), rgb(194, 166, 62) 3.5%, rgb(180, 151, 47) 96.5%, rgb(41, 37, 19));
+									cursor: pointer;
+								"
+							>
+
+								<div
+									class = "infos unskew"
+									style = "
+										
+									"
+								>
+									voir les fichiers résultats.
+									<br>⚠: le contenu du dossier est supprimé lorsque le logiciel est fermé ou lorsque qu'une génération est relancée,
+									<br>	déplacez ces fichiers dans un autre dossier pour les conserver.
+								</div>
+
+								<canvas
+									id="canvas_btn_open_result_folder"
+									class="unskew"
+									style ="
+										background-color: rgb(168, 141, 44, 0);
+										/*width: 100%;
+										height: 100%;*/
+										width: 100%;
+										/*padding-top: 100%;*/
+										aspect-ratio: 4 / 3;
+										/*padding-left: 0;
+										padding-right: 0;
+										margin-left: auto;
+										margin-right: auto;*/
+										/*display: block;*/
+										/*object-fit: contain;*/
+									"
+								>
+									<script>
+										const btn_open_result_folder = document.getElementById('btn_open_result_folder')
+										btn_open_result_folder.addEventListener('click', ev => {
+											post('open_result_folder', [])
+											update_liste_des_csv()
+										})
+										{
+											const w = canvas_btn_open_result_folder.width = window.devicePixelRatio * canvas_btn_open_result_folder.clientWidth
+											const h = canvas_btn_open_result_folder.height = window.devicePixelRatio * canvas_btn_open_result_folder.clientHeight
+
+											ctx = canvas_btn_open_result_folder.getContext('2d')
+
+											ctx.lineCap = "round"
+
+											
+
+											const x0 = .22*w
+											const x1 = .42*w
+											const x2 = .46*w
+											const x3 = .75*w
+
+											const y0 = .15*h
+											const y1 = .25*h
+											const y2 = .85*h
+
+											//var e = .04* Math.random() * Math.min(w, h)
+											var e = .04 * Math.min(w, h)
+
+											run_path = (dx, dy, sym_vert, level) => {
+												ctx.beginPath()
+
+												// BR
+												ctx.moveTo(x3, y2-e)
+												ctx.quadraticCurveTo(x3, y2, x3-e, y2)
+
+												// BL
+												ctx.lineTo(x0+e, y2)
+												ctx.quadraticCurveTo(x0, y2, x0, y2-e)
+
+												var y_0 = y0
+												var y_1 = y1
+
+												if(sym_vert) {
+													y_0 = y1
+													y_1 = y0
+												}
+
+												if (!level) {
+													y_1 = y_0 = y0
+												}
+
+												// TL
+												ctx.lineTo(x0-dx, y_0+dy+e)
+												ctx.quadraticCurveTo(x0-dx, y_0+dy, x0+e, y_0+dy)
+
+												ctx.lineTo(x1, y_0+dy)
+												ctx.lineTo(x2, y_1+dy)
+
+												// TR
+												ctx.lineTo(x3+dx-e, y_1+dy)
+												ctx.quadraticCurveTo(x3+dx, y_1+dy, x3+dx, y_1+dy+e)
+
+												ctx.closePath()
+											}
+
+											ctx.lineWidth = .02*w
+											ctx.strokeStyle = 'rgb(118, 99, 31)'
+											run_path(0,0,true, true)
+											ctx.stroke()
+
+											ctx.fillStyle = "rgb(228, 181, 84)";
+											run_path(0,0,true, true)
+											ctx.fill();
+
+											{
+												const e_av = e
+												e = .0 * Math.min(w, h)
+
+												dx = .04*w
+												dy = .135*h
+
+												ctx.lineWidth = .015*w
+												ctx.strokeStyle = 'rgb(130, 130, 130)'
+												run_path(dx,dy,true, false)
+												ctx.stroke()
+
+												var gradient = ctx.createLinearGradient(0, y0, 0, y2);
+												gradient.addColorStop(0, 'rgb(255, 255, 255)');
+												gradient.addColorStop(1, 'rgb(130, 130, 130)');
+												ctx.fillStyle = gradient;
+												run_path(dx,dy,true, false)
+												ctx.fill();
+
+												ctx.font = (.115*w)+"px serif"
+												var gradient = ctx.createLinearGradient(0, y0, 0, y2)
+												gradient.addColorStop(0, 'rgb(50, 50, 50)')
+												gradient.addColorStop(1, 'rgb(50, 50, 50)')
+												ctx.fillStyle = gradient
+												ctx.textAlign = 'right'
+												ctx.textBaseline = "hanging"
+												ctx.fillText("result", x3+.3*dx, y0+1.15*dy)
+												
+												e = e_av
+											}
+
+											ctx.lineWidth = .02*w
+											ctx.strokeStyle = 'rgb(118, 99, 31)'
+											run_path(.04*w,.2*h,false, true)
+											ctx.stroke()
+
+											var gradient = ctx.createLinearGradient(0, y0, 0, y2);
+											gradient.addColorStop(0, 'rgb(227, 197, 136)');
+											gradient.addColorStop(1, 'rgb(198, 151, 54)');
+											ctx.fillStyle = gradient;
+											
+											run_path(.04*w,.2*h,false, true)
+											ctx.fill();
+
+										}
+									</script>
+								</canvas>
+
+								
+								<!--div
+									class="unskew"
+									style="
+										margin: 0;
+										position: absolute;
+										top: 50%;
+										left: 50%;
+										transform: translate(-50%,-50%);
+									"
+								>
+									result
+								</div-->
+								
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+
+				<style>
+					.hide-scroll::-webkit-scrollbar {
+						display: none; /* Safari and Chrome */
+					}
+					.hide-scroll {
+						-ms-overflow-style: none;  /* Internet Explorer 10+ */
+						scrollbar-width: none;  /* Firefox */
+					}
+				</style>
+				<div
+					id = "liste_des_csv"
+					class = "hide-scroll"
+					style="
+						/*float:left;*/
+						/*width: 100%;*/
+						/*float: right;*/
+						/*flex: auto;*/
+						overflow:scroll;
+						height:100%;
+						/*max-width: 85%;*/
+						/*-webkit-scrollbar-display: none;*/
+						/*overflow: hidden;*/
+						/*right:100%;*/
+						right: 0;
+						padding-left: 15px; /* pour que l'ombre ne soit pas coupée */
+						padding-right: 30px; /* pour que l'ombre ne soit pas coupée */
+						padding-top: 18px; /* pour que l'ombre ne soit pas coupée */
+					"
+				>
+				</div>
+
+			</div>
+
+		</div>
+
+
+
+		
+		<!--
+		<input id="image-file" type="file" />
+		-->
+		
+
+		<style>
+			/*table {
+				border-collapse: collapse;
+				border-spacing: 30px;
+			}*/
+			/*tr, */th, td { 
+				/*border: solid;
+				border-width: 1px 0;
+				padding-left: 50px;
+				padding-right: 50px;*/
+				padding: 0 15px;
+			}
+		</style>
+			
+		<script>
+
+			log = console.log
+
+			const add_verticaly_separated_divs = (container, left_px_separation_position) => {
+
+				const colonne1 = document.createElement("div")
+				colonne1.style.float = 'left'
+				colonne1.style.width = 'calc(100% - '+left_px_separation_position+'px)'
+				colonne1.style.height = '100%'
+
+				const colonne2 = document.createElement("div")
+				colonne2.style.float = 'left'
+				colonne2.style.width = left_px_separation_position+'px'
+				colonne2.style.height = '100%'
+
+				container.appendChild(colonne1)
+				container.appendChild(colonne2)
+			}
+
+			/*drop_on_me = document.getElementById('drop_on_me')
+			{
+				const w = drop_on_me.clientWidth
+				const h = drop_on_me.clientHeight
+
+				drop_on_me.width = w
+				drop_on_me.height = h
+
+				const ctx = drop_on_me.getContext('2d')
+
+				ctx.strokeStyle = 'rgb(240,240,240)'
+				//ctx.lineCap = "round"
+				ctx.lineCap = "butt"
+
+				ctx.lineWidth = .12*w
+				var d = .25
+
+				ctx.beginPath()
+				ctx.moveTo(.15*w, .5*h)
+				ctx.lineTo(.15*w,.85*h)
+				ctx.lineTo(.85*w,.85*h)
+				ctx.lineTo(.85*w,.5*h)
+				ctx.stroke()
+
+				ctx.fillStyle = ctx.strokeStyle
+
+				ctx.beginPath()
+				ctx.moveTo(.5*w, .65*h)
+				ctx.lineTo(.85*w,.3*h)
+				ctx.lineTo(.65*w,.3*h)
+				ctx.lineTo(.65*w,.05*h)
+				ctx.lineTo(.35*w,.05*h)
+				ctx.lineTo(.35*w,.3*h)
+				ctx.lineTo(.15*w,.3*h)
+				ctx.fill()
+			}*/
+
+			liste_des_csv = document.getElementById('liste_des_csv')
+
+			
+			document.addEventListener("dragover", e => {
+				// prevent default to allow drop
+				e.preventDefault();
+			});
+			document.addEventListener("dragenter", e => {
+				// prevent default to allow drop
+				e.preventDefault();
+			});
+
+
+			/*******************
+			 * server
+			 * communications
+			 * *****************/
+
+			function post(operation_name, data_to_convert_to_json = '') {
+				let formData = new FormData()
+				formData.append(operation_name, JSON.stringify(data_to_convert_to_json))
+				return fetch(
+					'http://127.0.0.1:8080',
+					{
+						method: "POST",
+						body: formData,
+						headers: { 'Accept': 'application/json' },
+					}
+				)
+			}
+
+			const set = (path, value) => post('set', [[path, value]])
+
+			function fetch_add_element_to_list(list_path, element) {
+				post('add_element_to_list', [list_path, element])
+			}
+
+			function fetch_remove_element_from_list(list_path, element) {
+				post('remove_element_from_list', [list_path, element])// peut faire une requête DELETE à la place
+			}
+
+			const remove_csv = (position) => {
+				let formData = new FormData()
+				formData.append("index", position)
+				fetch(
+					'http://127.0.0.1:8080',
+					{
+						method: "DELETE",
+						body: formData,
+						headers: { 'Accept': 'application/json' },
+					}
+				)
+				update_liste_des_csv()
+			}
+
+			const delete_tumult_query = (csv_key, query_key) => {
+				let formData = new FormData()
+				formData.append("delete_query", JSON.stringify([csv_key, query_key]))
+				fetch(
+					'http://127.0.0.1:8080',
+					{
+						method: "DELETE",
+						body: formData,
+						headers: {
+							//"Content-Type": "text/plain"
+							'Accept': 'application/json',
+						},
+					}
+				)
+				update_liste_des_csv()
+			}
+
+			const add_tumult_query = (csv_key) => {
+				let formData = new FormData()
+				formData.append("add_query", csv_key)
+				fetch(
+					'http://127.0.0.1:8080/all_csv',
+					{
+						method: "POST",
+						body: formData,
+						headers: { 'Accept': 'application/json' },
+					}
+				)
+				update_liste_des_csv()
+			}
+
+			const post_open_in_file_explorer = (path) => {
+				post('open_in_file_explorer', path)
+			}
+
+			function post_open_new_tab(...args) {
+				post(...args).then(
+					response => response.json()
+				).then(
+					(rjson) => {
+						console.log({'rjson.new_tab_url':rjson.new_tab_url})
+						console.log({'rjson.new_tab_url':encodeURIComponent(rjson.new_tab_url)})
+						window.open((rjson.new_tab_url), '_blank').focus()
+					}
+				)
+			}
+
+			const post_see_3D = (path) => {
+				post_open_new_tab('see_3D', path)
+				/*post('see_3D', path).then(
+					response => response.json()
+				).then(
+					(rjson) => {
+						window.open(rjson.new_tab_url, '_blank').focus()
+					}
+				)*/
+			}
+
+			const post_see_2D_pie = (path) => {
+				post_open_new_tab('see_2D_pie', path)
+			}
+
+			const post_see_2D_bars = (path) => {
+				post_open_new_tab('see_2D_bars', path)
+			}
+
+			const post_see_exel_graph = (path) => {
+				post('see_exel_graph', path)
+			}
+
+			const post_quit = () => {
+				post('quit')
+			}
+			window.addEventListener("beforeunload", post_quit)
+
+
+
+			input_privacy_budget.addEventListener(
+				'change',
+				ev => {
+					set(['privacy_budget'], parseFloat(input_privacy_budget.value))
+					update_liste_des_csv()
+				}
+			)
+
+			btn_start_tumult_session = document.getElementById('btn_start_tumult_session')
+			btn_start_tumult_session.addEventListener(
+				'click',
+				async () => {
+
+					let user_confirm = true
+
+					if(input_privacy_budget.value > 5) {// message warning
+						const couvre_toute_la_page = document.createElement('div')
+						Object.assign(couvre_toute_la_page.style, {
+							position: 'absolute',
+							top: 0,
+							bottom: 0,
+							left: 0,
+							right: 0,
+							backgroundColor: 'rgba(50,50,70,.1)',
+							//backgroundColor: 'rgba(0,255,0,.5)',
+							zIndex: 10000000,
+							display: 'flex', // to center child
+							backdropFilter: 'blur(6px)'
+						})
+						document.body.appendChild(couvre_toute_la_page)
+						
+						{
+							const popup = document.createElement('div')
+
+							//popup.style.position = 'absolute'
+							popup.style.width = 'fit-content'
+							popup.style.height = 'fit-content'
+							popup.style.margin = 'auto'
+							popup.style.backgroundColor = 'rgba(255,255,255, .95)'
+							popup.style.borderRadius = '20px'
+							popup.style.padding = 50
+
+							couvre_toute_la_page.append(popup)
+
+							popup.innerHTML = `la valeur du budget privacy est trop élevée (${input_privacy_budget.value} > 5),<br>voulez-vous tout de même continuer ?<br><br>`
+
+							user_confirm = null
+
+							const promise = new Promise((resolve, reject) => {
+								(function wait_client_response(){
+									if (user_confirm !== null) return resolve(); 
+									else setTimeout(wait_client_response, 100);
+								})();
+							})
+
+							{// NO
+								const btn_no = document.createElement('button')
+
+								btn_no.append('non')
+
+								btn_no.style.width = '5em'
+								btn_no.style.margin = 10
+								btn_no.style.padding = 10
+
+								btn_no.addEventListener('click', ()=>{
+									user_confirm = false
+								})
+
+								popup.append(btn_no)
+							}
+
+							{// YES
+								const btn_yes = document.createElement('button')
+
+								btn_yes.append('oui')
+
+								btn_yes.style.width = '5em'
+								btn_yes.style.margin = 10
+								btn_yes.style.padding = 10
+
+								btn_yes.addEventListener('click', ()=>{
+									user_confirm = true
+								})
+
+								popup.append(btn_yes)
+							}
+
+							await promise;
+
+						}
+
+						couvre_toute_la_page.remove()
+					}
+
+					if(user_confirm === true) {
+						document.body.style.cursor = 'wait'
+						//console.log("POST")
+
+						document.body.style.position = 'relative'
+
+						var div = null
+
+						ctx_e(
+							document.body,
+							()=>{
+								div = ndiv(div =>{
+									div.style.position = 'absolute'
+									div.style.top = '0'
+									div.style.bottom = '0'
+									div.style.left = '0'
+									div.style.right = '0'
+									div.style.backgroundColor = 'rgb(220,220,255,.6)'
+									div.style.zIndex = '1000000000'
+									div.style.backdropFilter = 'blur(2px)'
+								})
+							}
+						)
+						
+
+						const at_end = ()=>{
+							document.body.style.cursor = ''
+							update_liste_des_csv()
+							div.remove()
+						}
+
+						post(
+							'start_tumult_session',
+							{'privacy_budget':parseFloat(input_privacy_budget.value)}
+						).then(res=>{
+							return res.arrayBuffer()
+						}).then(a=>{
+							//console.log("THEN")
+							at_end()
+						}).catch(()=>{
+							//console.log("CATCH")
+							at_end()
+						})
+					}
+
+					
+				}
+			);
+
+			function sleep(ms) {
+				return new Promise(resolve => setTimeout(resolve, ms));
+			}
+
+			const cloneCanvas = (oldCanvas) => {
+				
+				var nc = oldCanvas.cloneNode(true)
+				var ctx = nc.getContext('2d')
+
+				ctx.drawImage(oldCanvas, 0, 0)
+				
+				return nc;
+			}
+
+
+
+			
+
+			const delete_ico = document.createElement("canvas")
+
+			const apply_btn_style = (e, bg_color) => {
+
+				const w = e.width = window.devicePixelRatio * (e.clientWidth = 18.)
+				const h = e.height = window.devicePixelRatio * (e.clientHeight = 18.)
+
+				e.style['background-color'] = bg_color
+				e.style['border-radius'] = (w/2) + 'px'
+				e.style['box-shadow'] = '1px 1px 2px 1px rgba(0,0,0,.5)'
+
+				e.style['position'] = 'relative'
+				e.style['top'] = '50%'
+				e.style['left'] = '50%'
+				e.style['transform'] = 'translate(-50%, -50%)'
+
+				e.style['cursor'] = 'pointer'
+
+			}
+
+			{// canvas delete ico
+				apply_btn_style(delete_ico, 'rgba(170, 50, 50, 1)')
+
+				const w = delete_ico.width
+				const h = delete_ico.height
+				
+				const ctx = delete_ico.getContext("2d")
+
+				ctx.strokeStyle = 'rgb(240,240,240)'
+				ctx.lineCap = "round"
+
+				ctx.lineWidth = .12*w
+
+				ctx.beginPath()
+				var d = .25
+				ctx.moveTo(d*w, d*h)
+				ctx.lineTo((1.-d)*w, (1.-d)*h)
+				ctx.stroke()
+
+				ctx.beginPath()
+				ctx.moveTo(d*w, (1.-d)*h)
+				ctx.lineTo((1.-d)*w, d*h)
+				ctx.stroke()
+			}
+
+			{// canvas play ico
+				canvas_btn_start_tumult_session = document.getElementById('canvas_btn_start_tumult_session')
+				const ctx = canvas_btn_start_tumult_session.getContext("2d")
+
+				const client_w = canvas_btn_start_tumult_session.clientWidth
+				const w = canvas_btn_start_tumult_session.width = window.devicePixelRatio * client_w
+				const h = canvas_btn_start_tumult_session.height = window.devicePixelRatio * (canvas_btn_start_tumult_session.clientHeight = client_w)
+
+				
+				ctx.lineCap = "round"
+
+				//ctx.lineWidth = .025*w
+				ctx.lineWidth = .025*w
+
+				ctx.beginPath()
+				ctx.moveTo(.7*w, .5*h)
+				ctx.lineTo(.3*w, .8*h)
+				ctx.lineTo(.3*w, .2*h)
+				ctx.lineTo(.7*w, .5*h)
+				
+				ctx.strokeStyle = 'rgba(0,0,0,.6)'
+				ctx.stroke()
+
+				ctx.beginPath()
+				ctx.moveTo(.7*w, .5*h)
+				ctx.lineTo(.3*w, .8*h)
+				ctx.lineTo(.3*w, .2*h)
+				ctx.lineTo(.7*w, .5*h)
+				//ctx.stroke()
+				ctx.closePath();
+
+				//ctx.fillStyle = "rgb(255,255,255)";
+				var gradient = ctx.createLinearGradient(.3*w, 0, .7*w, 0)
+				gradient.addColorStop(0, 'rgb(6, 110, 5)')
+				gradient.addColorStop(1, 'rgb(8, 125, 6)')
+				ctx.fillStyle = gradient
+				ctx.fill();
+
+				
+
+				
+				
+			}
+
+
+			// save scroll so that you don't have to re-scroll when you reload the page
+			function save_scroll() {
+				set(['scroll_x'], parseFloat(liste_des_csv.scrollLeft))
+				set(['scroll_y'], parseFloat(liste_des_csv.scrollTop))
+			}
+			function on_scroll_end() {
+				save_scroll()
+			}
+			{
+				let timer = null;
+				liste_des_csv.addEventListener('scroll', () => {
+					if(timer !== null) clearTimeout(timer);
+					timer = setTimeout(() => on_scroll_end(), 150);
+				}, false);
+			}
+			
+			
+
+
+
+
+			curr_elm = null
+
+			const ctx_curr_elm = (elm, f) => {
+				const previous_curr_elm = curr_elm
+				curr_elm = elm
+				f()
+				curr_elm = previous_curr_elm
+			}
+
+			function ctx_e(elm, f){
+				return ctx_curr_elm(elm, f)
+			}
+
+			
+ 			
+			const new_elm = (elem_name, parent = null, f = elm=>{}, f_append = (parent, elm) => parent.appendChild(elm)) => {
+				const elm = document.createElement(elem_name)
+				ctx_curr_elm(
+					elm,
+					() => {
+						if(parent !== null) f_append(parent, elm)
+						f(elm)
+					}
+				)
+				//const _curr_elm_avant = _curr_elm
+				//_curr_elm = elm
+				//if(parent !== null) f_append(parent, elm)
+				//f(elm)
+				//_curr_elm = _curr_elm_avant
+				return elm
+			}
+
+			const new_sub = (elem_name, f = elm=>{}, f_append = (parent, elm) => parent.appendChild(elm)) => new_elm(elem_name, curr_elm, f, f_append)
+
+			function ndiv(f = elm=>{}) {
+				return new_sub('div', f)
+			}
+
+			const apply_div_bubble_style = (div, color) =>{
+				//e.style.height = "80px"
+				//e.style.height = "100%"
+				//e.style['display'] = 'inline-block'
+				//e.style['display'] = 'inline'
+				//div.style.width = "100% - 10px"
+				//div.style.width = "100%"
+				div.style['display'] = 'table'
+				div.style['border-radius'] = "15px"
+				div.style.background = color
+				div.style.margin = '6px';
+				div.style.padding = '5px';
+
+			}
+			
+
+			
+
+
+
+
+			const new_sub_container = (parent, color, f_delete, f = content => {}) =>
+
+				new_elm('div', parent, div => {
+					
+					apply_div_bubble_style(div, color)
+
+					// POUR QUE LE DELETE BTN PUISSE AVOIR ABSOLUTE !!!
+					div.style.position = 'relative'
+					div.style.width = 'auto'
+
+					div.style['box-shadow'] = '2px 2px 20px 0px rgba(0, 0, 0, .8)'
+
+					// center horizontally
+					//div.style.margin = '20 auto'
+
+					//add_verticaly_separated_divs(div, delete_ico.width + 10)
+
+					ctx_curr_elm(
+						//div.children[0],
+						div,
+						//() => f(div.children[0])
+						() => f(div)
+					)
+
+					if (f_delete !== null) {// delete btn
+						const btn = cloneCanvas(delete_ico)
+						btn.style.top = '0%'
+						//delete btn.style.left
+						btn.style.removeProperty('left')
+						btn.style.removeProperty('right')
+						//delete btn.style.right
+						btn.style.right = '0px'
+						
+						btn.style.position = 'absolute'
+						btn.addEventListener('click', ev => f_delete())
+						//div.children[1].appendChild(btn)
+						div.appendChild(btn)
+					}
+				})
+
+
+			const new_add_btn = (parent, f) => {
+
+				return new_elm('canvas', parent, canvas => {
+
+					apply_btn_style(canvas, 'rgba(0, 150, 0, 1)')
+
+					const w = canvas.width
+					const h = canvas.height
+
+					const ctx = canvas.getContext('2d')
+
+					ctx.strokeStyle = 'rgb(240,240,240)'
+					ctx.lineCap = "round"
+
+					ctx.lineWidth = .12*w
+
+					ctx.beginPath()
+					var d = .2
+					ctx.moveTo(.5*w, d*h)
+					ctx.lineTo(.5*w, (1.-d)*h)
+					ctx.stroke()
+
+					ctx.beginPath()
+					ctx.moveTo(d*w, .5*h)
+					ctx.lineTo((1.-d)*w, .5*h)
+					ctx.stroke()
+
+
+					canvas.addEventListener('click', ev => f())
+				})
+
+			}
+
+
+			function info_bubble(
+				sup,
+				txt,
+				{
+					bottom_left,
+					top_left,
+					middle_left,
+					middle_right,
+				}
+			) {
+
+				sup.style.position = 'relative'
+			
+				const infos = ndiv(infos=>{
+					infos.style.display = 'none'
+					infos.style.position = 'absolute'
+					infos.style.padding = '4px'
+					infos.style.backgroundColor = 'rgba(255,255,255,1)'
+					infos.style.color = 'rgba(0,0,0,1)'
+					infos.innerText = txt
+					infos.style.zIndex = 1000000000
+					if(bottom_left) {
+						infos.style.right = '100%'
+						infos.style.top = '100%'
+					}
+					else if(top_left) {
+						infos.style.right = '100%'
+						infos.style.bottom = '100%'
+					}
+					else if(middle_left) {
+						infos.style.right = '100%'
+						infos.style.top = '50%'
+						infos.style.transform = 'translate(0%,-50%)'
+					}
+					else if(middle_right) {
+						infos.style.left = '100%'
+						infos.style.top = '50%'
+						infos.style.transform = 'translate(0%,-50%)'
+					}
+					
+					infos.style.borderRadius = '.2em'
+				})
+				sup.addEventListener('mouseenter', ()=>{
+					infos.style.display = ''
+				})
+				sup.addEventListener('mouseleave', ()=>{
+					infos.style.display = 'none'
+				})
+			}
+
+
+
+			function expand_able(
+				title,
+				rjson,
+				path_of_expand_value_in_json,
+				make_content
+			) {
+
+				new_sub('div', div=> {
+
+					//div.style.transition = 'width 2s, height 2s'
+
+					const padding = '.8em'
+
+					div.style.backgroundColor = 'rgb(255,255,255,.15)'
+					div.style.borderRadius = '.8em'
+					div.style.margin = '.4em'
+					div.style.padding = padding
+
+					const expand_options = new_sub('div', div=>{
+
+						new_sub('div', div=>{
+							div.innerHTML = path_of_expand_value_in_json.reduce((o, n) => o[n], rjson) ? '<b>-</b>' : '<b>+</b>'
+							div.style.display = 'inline'
+							div.style.padding = '.5ch'
+						})
+
+						new_sub('div', div=>{
+							div.innerText = title
+							div.style.display = 'inline'
+						})
+					})
+
+					const separator = new_sub('div', separator => {
+						//separator.style.width = '120%'
+						//separator.style.display = 'block'
+						//separator.style.left = '-4em'
+						//separator.style.right = '-4em'
+						separator.style.margin = `.5em -${padding} .5em -${padding}`
+						separator.style.height = 1
+						separator.style.backgroundColor = 'rgba(255,255,255,.25)'
+					})
+
+					expand_options.addEventListener('mouseover',()=>{ expand_options.style.cursor = "pointer" })
+					expand_options.addEventListener('mouseleave',()=>{ expand_options.style.cursor="" })
+
+					//content.hidden = !query_json['more_options_expanded']
+					const content = make_content()
+					separator.hidden = content.hidden = !path_of_expand_value_in_json.reduce((o, n) => o[n], rjson)// query_json['more_options_expanded']
+
+					//console.log('content.hidden', content.hidden)
+
+					expand_options.addEventListener('mousedown', ev => {
+						ev.preventDefault()
+						set(path_of_expand_value_in_json, content.hidden)
+						update_liste_des_csv()
+					})
+				})
+			}
+
+			let global_json = null	
+
+
+			function new_sub_response(
+				response_json,
+				path_in_json
+			) {
+
+
+				new_sub('div', div => {
+
+					
+					
+					let color = 'rgb(100,100,100)'
+
+					let add_subs_called = false
+
+					function add_subs() {
+						if(add_subs_called) return;
+						add_subs_called = true
+						if(response_json.subs) {
+							let c = 0
+							for(const sub of response_json.subs) {
+								new_sub_response(sub, path_in_json.concat(['subs',c++]))
+							}
+						}
+					}
+
+					
+
+					switch(response_json['type']) {
+
+						case 'error':
+
+							div.style.color = 'white'
+
+							//color = 'rgb(209, 82, 82)'
+							color = 'rgb(180, 82, 82)'
+							div.style['white-space'] = 'pre-wrap'
+							div.style['box-shadow'] = '2px 2px 20px 0px rgba(0, 0, 0, .7)'
+							
+							new_sub('div', div => {
+
+								div.style['cursor'] = 'pointer'
+								div.style['text-align'] = 'center'
+								
+
+								new_sub('div', div => {
+									if(response_json.title) {
+										div.innerHTML = response_json.title
+									}
+									else {
+										div.innerText = 'erreur interne ou de parametre'
+									}
+								})
+
+								new_sub('canvas', canvas => {
+									canvas.style['background-color'] = 'rgba(0, 0, 0, 0)'
+									canvas.style['display'] = 'block'
+									canvas.style['margin'] = '0 auto'
+									//canvas.style['background-color'] = 'rgb(255, 42, 42)'
+
+									const ctx = canvas.getContext('2d')
+
+									const w = canvas.width =  window.devicePixelRatio * (canvas.clientWidth = 20)
+									const h = canvas.height =  window.devicePixelRatio * (canvas.clientHeight = 20)
+
+									ctx.beginPath();
+									if(response_json['expanded']) {
+										ctx.moveTo(.1*w, .8*h);
+										ctx.lineTo(.5*w, .2*h);
+										ctx.lineTo(.9*w, .8*h);
+									}else{
+										ctx.moveTo(.1*w, .2*h);
+										ctx.lineTo(.5*w, .8*h);
+										ctx.lineTo(.9*w, .2*h);
+									}
+									
+
+									// Fill path
+									ctx.fillStyle = "white";
+									ctx.fill();
+								})
+
+								if(path_in_json) {
+									div.addEventListener('click', ev => {
+										set(path_in_json.concat(['expanded']), !response_json['expanded'])
+										update_liste_des_csv()
+									})
+								}
+							})
+							
+							if(response_json['expanded']) {
+								new_sub('div', div => {
+									div.style['box-shadow'] = '0px 0px 1.5px 1.5px rgba(0, 0, 0, .4)'
+									apply_div_bubble_style(div, 'rgb(145, 60, 60)')
+
+									new_sub('div', div => {
+										div.innerText = response_json['exception']
+									})
+									new_sub('div', div => {
+										div.innerText = '\n⚠\n'
+									})
+									new_sub('div', div => {
+										div.innerText = response_json['traceback']
+									})
+								})
+							}
+
+							//div.style.width = "500px"
+							break;
+						case 'path':
+							//color = 'rgb(83, 143, 71)'
+							//color = 'rgb(133, 121, 193)'
+							//color = 'rgb(183, 201, 243)'
+							//color = 'rgb(86, 176, 83)'
+							//color = 'rgb(80, 150, 149)'
+							//color = 'rgb(207, 255, 33)'
+							//color = 'rgb(161, 199, 26)'
+							//color = 'rgb(173, 214, 28)'
+							//color = 'rgb(153 179 255)'
+							//color = 'rgb(235 255 83)'
+							color = 'rgb(134 110 255)'
+							//div.innerText = JSON.stringify(response_json)
+							const path = response_json['path']
+
+							const margin = '7px'
+							new_sub('a', a => {
+								//a.href = path.dirname(response_json['path'])
+								
+								//a.href = path.substr(0, path.lastIndexOf("/"))
+								a.href = path
+								//a.innerText = path
+
+								a.style.margin = margin
+
+								//a.style['float'] = 'right'
+								//a.style.display = 'block'
+								
+								a.innerText = path.substr(path.lastIndexOf("/")+1)
+								//div.style.right = '0%'
+								//div.style.position = 'absolute'
+								//div.style['float'] = 'right'
+								/*a.style['margin-left'] = 'auto'
+								a.style['vertical-align'] = 'middle'
+								a.style['height'] = '100%'*/
+								//div.style['margin-right'] = '0'
+								a.addEventListener('click', ev => post_open_in_file_explorer(path))
+								//a.target="_explorer.exe"
+							})
+
+							/*new_sub('a', div => {
+								div.innerText = 'exel graph'
+
+								div.href = "javascript:;"
+
+								//apply_div_bubble_style(div, 'rgba(100,30,165,1)')
+								//div.style['cursor'] = 'pointer'
+								//div.style['float'] = 'right'
+
+								div.style.margin = margin
+								
+								div.addEventListener('click', ev => {
+
+									post_see_exel_graph(path)
+								})
+							})*/
+
+							new_sub('a', div => {
+								div.innerText = '3D'
+
+								div.href = "javascript:;"
+
+								//apply_div_bubble_style(div, 'rgba(100,30,165,1)')
+								//div.style['cursor'] = 'pointer'
+								//div.style['float'] = 'right'
+
+								div.style.margin = margin
+								
+								div.addEventListener('click', ev => {
+
+									post_see_3D(path)
+								})
+							})
+
+							new_sub('a', div => {
+								div.innerText = 'pie chart'
+
+								div.href = "javascript:;"
+
+								//apply_div_bubble_style(div, 'rgba(100,30,165,1)')
+								//div.style['cursor'] = 'pointer'
+								//div.style['float'] = 'right'
+
+								div.style.margin = margin
+								
+								div.addEventListener('click', ev => {
+
+									post_see_2D_pie(path)
+								})
+							})
+
+							
+
+							new_sub('a', div => {
+								div.innerText = 'bar chart'
+
+								div.href = "javascript:;"
+
+								//apply_div_bubble_style(div, 'rgba(100,30,165,1)')
+								//div.style['cursor'] = 'pointer'
+								//div.style['float'] = 'right'
+
+								div.style.margin = margin
+								
+								div.addEventListener('click', ev => {
+
+									post_see_2D_bars(path)
+								})
+							})
+							break;
+
+						case 'privacy budget used':
+							{
+								div.innerText = 'privacy budget utilisé pour cette requête: ' + response_json['value']
+								div.style.opacity = .7
+								div.style.transform = 'scale(.95)'
+								color = 'rgb(100,100,100,0)'
+							}
+							break
+
+						case 'message':
+							{
+								div.innerHTML = response_json.message
+								color = 'rgb(255,255,255,1)'
+								div.style.color = 'black'
+								//div.style.textAlign = 'center'
+							}
+							break
+
+						case 'expand_able':
+							expand_able(
+								response_json.title,
+								global_json,
+								//path_of_expand_value_in_json,
+								path_in_json.concat(['expanded']),
+								()=> new_sub('div', ()=> add_subs())
+							)
+							break
+
+						default:
+							color = 'rgb(100,100,100)'
+							div.innerText = JSON.stringify(response_json)
+					}
+
+					
+
+					add_subs()
+
+
+					if(response_json['type'] !== 'expand_able') {
+						apply_div_bubble_style(div, color)
+
+						div.style['margin'] = '10px'
+						div.style['padding'] = '15px'
+
+					}
+
+					
+				})
+
+			}
+
+
+
+			const update_liste_des_csv = () => {
+
+
+				fetch(
+					'http://127.0.0.1:8080/all_csv',
+					{
+						method: "GET",
+						headers: { 'Accept': 'application/json' },
+					}
+				).then(
+					response => response.json()
+				).then(
+					(rjson) => {
+						//log('RESPONSE GET all_csv: ', rjson)
+
+						global_json = rjson
+
+
+						//log('liste_des_csv.scrollTop =', liste_des_csv.scrollTop)
+
+						// get scroll position (pour conserver scroll position, sinon revient au debut à chaque chagement)
+						//const scroll_x = liste_des_csv.scrollLeft,
+						//	  scroll_y = liste_des_csv.scrollTop;
+
+						// vider liste_des_csv
+						while (liste_des_csv.firstChild) liste_des_csv.removeChild(liste_des_csv.lastChild)
+
+						// regenerer liste_des_csv
+						//console.log('response =', rjson)
+
+						input_privacy_budget.value = rjson['privacy_budget']
+
+						let pos = 0
+
+						for(const csv_json of rjson['elms']) {
+
+							const position = pos
+
+							//new_elm('div', liste_des_csv, e => {
+
+							if(csv_json['type'] == 'csv') {
+								new_sub_container(
+									liste_des_csv,
+									csv_json['private'] ? 'rgb(64, 168, 118)' : 'rgb(255, 156, 56)',
+									() => remove_csv(position),
+									e => {
+									
+									/*e.style.width = "100% - 10px"
+									
+									e.style['display'] = 'table'
+									e.style['border-radius'] = "20px"
+									e.style.background = 'rgb(64, 168, 118)'
+									e.style.margin = '5px';
+									e.style.padding = '5px';
+
+									add_verticaly_separated_divs(e, delete_ico.width + 10)*/
+
+
+									//add_verticaly_separated_divs(e, delete_ico.width + 10)
+
+									//e.style['padding'] = '5px'
+
+									function apply_input_style(e) {
+										e.style.backgroundColor = 'rgba(255, 255, 255,.5)'
+										e.style.borderRadius = '8px'
+										e.style.border = '1px solid rgba(255, 255, 255,.5)'
+									}
+
+									new_sub('div', div => {
+
+										div.style.display = 'flex'
+										
+
+
+
+										//div.style['justify-content'] = 'space-between'
+										//div.style['margin-right'] = '20px'
+										//div.innerText = csv_json['tumult_source_id']
+
+										new_sub('div', div => {
+											div.style.width = '20px'
+										})
+
+										new_sub('div', a => {
+
+											a.innerHTML = '<u>'+csv_json['tumult_source_id']+'</u>'
+
+											a.style.position = 'relative'
+
+											a.style.cursor = 'pointer'
+
+
+
+											a.addEventListener('click', ()=>{
+
+												post_open_in_file_explorer(csv_json.src.path)
+											})
+
+											const infos = ndiv(infos=>{
+												infos.innerText = csv_json.src.path
+												infos.style.display = 'none'
+												infos.style.background = 'rgba(255, 255, 255, 1)'
+												infos.style.position = 'absolute'
+												//infos.style.whiteSpace = 'nowrap'
+												infos.style.padding = '4px'
+												infos.style.zIndex = '1000000'
+											})
+
+											a.addEventListener( 'mouseover', ()=>{
+												infos.style.display = ''
+
+											})
+
+											a.addEventListener( 'mouseout', ()=>{
+												infos.style.display = 'none'
+											})
+										})
+
+										new_sub('div', div => {
+											div.style.width = '20px'
+										})
+
+										new_sub('select', select => {
+
+											apply_input_style(select)
+
+											for(const [nom, text] of [
+												[';','\';\' as delimiter'],
+												[',','\',\' as delimiter'],
+												['\t','\'\\t\' as delimiter'],
+											]) {
+
+												new_sub('option', option => {
+													
+													if (nom == csv_json['src']['delimiter']) {
+														option.selected = 'selected'
+													}
+													option.value = nom
+													option.textContent = text
+												})
+											}
+											select.addEventListener(
+												'change',
+												() => {
+													set(['elms', position, 'src', 'delimiter'], select.value)
+													update_liste_des_csv()
+												}
+											)
+
+										})
+
+										new_sub('div', div => {
+											div.style.width = '20px'
+										})
+
+										new_sub('select', select => {
+
+											apply_input_style(select)
+
+											for(const [nom, text] of [
+												['private','private'],
+												['public','public'],
+											]) {
+
+												new_sub('option', option => {
+													
+													if (nom == (csv_json['private'] ? 'private' : 'public')) {
+														option.selected = 'selected'
+													}
+													option.value = nom
+													option.textContent = text
+												})
+											}
+											select.addEventListener(
+												'change',
+												() => {
+													set(['elms',position, 'private'], select.value == 'public' ? false : true)
+													update_liste_des_csv()
+												}
+											)
+
+										})
+
+										
+									})
+
+									expand_able(
+										'sample',
+										rjson,
+										['elms', position, 'sample', 'expanded'],
+										() => new_sub('div', ()=>{
+
+											function apply_option_style(e) {
+												e.style.margin = '.5em'
+												e.style.padding = '.5em'
+												e.style.backgroundColor = 'rgba(255,255,255,.15)'
+												e.style.borderRadius = '.4em'
+												e.style.width = 'fit-content'
+											}
+
+
+											new_sub('div', div =>{
+
+												apply_option_style(div)
+
+												div.append('extract ')
+
+												new_sub('input', input=>{
+													
+													apply_input_style(input)
+													input.style.width = '6ch'
+													input.style.textAlign = 'right'
+
+													input.type = 'number'
+
+													input.value = csv_json['sample']['random']['percent']
+
+													input.addEventListener('change', ()=>{
+														set(['elms', position, 'sample',  'random', 'percent'], parseFloat(input.value))
+														update_liste_des_csv()
+													})
+												})
+
+												div.append(' % lines at random')
+
+												let c = 0
+												for(const response of csv_json.sample.random.responses) {
+													new_sub_response(response, ['elms', position, 'sample', 'random', 'responses', c++])
+												}
+										
+											})
+
+
+
+
+											function horizontal_table_to_select_columns(
+												path_of_list_of_selected_columns
+											) {
+
+												return new_sub('table', table => {
+
+													table.style.backgroundColor = 'rgba(255,255,255,.15)'
+													table.style.borderRadius = '.3em'
+													table.style.margin = '.5em'
+													table.style.padding = '.3em'
+													//table.style.borderSpacing = '.9em'
+													//table.style.display = ''
+													
+													new_sub('thead')
+
+													new_sub('tbody', ()=>{
+
+														new_sub('tr', ()=> {
+
+															for(const column_name of csv_json["header"]) {
+
+																new_sub('td', td=>{
+
+																	td.style.textAlign = 'center'
+																	td.style.verticalAlign = 'middle'
+
+																	td.innerText = column_name
+																})
+															}
+
+														})
+
+														const selected_columns = path_of_list_of_selected_columns.reduce((o, n) => o[n], rjson)
+
+														new_sub('tr', ()=> {
+
+															for(const column_name of csv_json["header"]) {
+
+																new_sub('td', td=>{
+
+																	td.style.textAlign = 'center'
+																	td.style.verticalAlign = 'middle'
+
+																	
+
+																	new_sub('input', checkbox => {
+																		checkbox.type = 'checkbox'
+																		checkbox.style.width = '1.5em'
+																		checkbox.style.height = '1.5em'
+																		//console.log({selected_columns, column_name, 'is in':selected_columns.includes(column_name)})
+																		checkbox.checked = selected_columns.includes(column_name)
+																		checkbox.addEventListener('change', ()=>{
+																			
+																			if(checkbox.checked) {
+																				fetch_add_element_to_list(path_of_list_of_selected_columns, column_name)
+																			}
+																			else {
+																				fetch_remove_element_from_list(path_of_list_of_selected_columns, column_name)
+																			}
+
+																			update_liste_des_csv()
+																		})
+																	})
+
+																})
+															}
+
+														})
+
+													})
+												})
+											}
+
+
+
+											new_sub('div', div =>{
+
+												apply_option_style(div)
+
+												div.append('remove lines with empty or NaN cells in columns:')
+
+												horizontal_table_to_select_columns(
+													['elms', position, 'sample', 'remove_lines_with_null_or_NaN_cells', 'columns']
+												)
+
+												let c = 0
+												for(const response of csv_json.sample.remove_lines_with_null_or_NaN_cells.responses) {
+													new_sub_response(response, ['elms', position, 'sample', 'remove_lines_with_null_or_NaN_cells', 'responses', c++])
+												}
+											})
+
+
+
+											new_sub('div', div =>{
+
+												apply_option_style(div)
+
+												div.append('remove ')
+
+												new_sub('input', input=>{
+													
+													apply_input_style(input)
+													input.style.width = '6ch'
+													input.style.textAlign = 'right'
+
+													input.type = 'number'
+
+													input.value = csv_json.sample.trim.min.percent
+
+													input.addEventListener('change', ()=>{
+														set(['elms', position, 'sample', 'trim', 'min', 'percent'], parseFloat(input.value))
+														update_liste_des_csv()
+													})
+												})
+
+												div.append(' % of min values of:')
+
+												horizontal_table_to_select_columns(
+													['elms', position, 'sample', 'trim', 'min', 'columns']
+												)
+
+												let c = 0
+												for(const response of csv_json.sample.trim.min.responses) {
+													new_sub_response(response, ['elms', position, 'sample', 'trim', 'min', 'responses', c++])
+												}
+
+											})
+
+											new_sub('div', div =>{
+
+												apply_option_style(div)
+
+												div.append('remove ')
+
+												new_sub('input', input=>{
+													
+													apply_input_style(input)
+													input.style.width = '6ch'
+													input.style.textAlign = 'right'
+
+													input.type = 'number'
+
+													input.value = csv_json.sample.trim.max.percent
+
+													input.addEventListener('change', ()=>{
+														set(['elms', position, 'sample', 'trim', 'max', 'percent'], parseFloat(input.value))
+														update_liste_des_csv()
+													})
+												})
+
+												div.append(' % of max values of:')
+
+												horizontal_table_to_select_columns(
+													['elms', position, 'sample', 'trim', 'max', 'columns']
+												)
+
+												let c = 0
+												for(const response of csv_json.sample.trim.max.responses) {
+													new_sub_response(response, ['elms', position, 'sample', 'trim', 'max', 'responses', c++])
+												}
+
+											})
+											
+											{
+												let c = 0
+												for(const response of csv_json.sample.trim.responses) {
+													new_sub_response(response, ['elms', position, 'sample', 'trim', 'responses', c++])
+												}
+											}
+											
+
+
+											new_sub('div', div => {
+
+												apply_option_style(div)
+
+												//div.append("remove outliers with the 'interquartile range' method:")
+												div.insertAdjacentHTML('beforeend', 'remove outliers with the <i>interquartile range</i> method:')
+
+												horizontal_table_to_select_columns(
+													['elms', position, 'sample', 'interquartile_range', 'columns']
+												)
+
+												let c = 0
+												
+												for(const response of csv_json.sample.interquartile_range.responses) {
+													new_sub_response(response, ['elms', position, 'sample', 'interquartile_range', 'responses', c++])
+												}
+
+											})
+
+											new_sub('div', div => {
+
+												apply_option_style(div)
+
+												//div.append("remove outliers with the <i>standard deviation</i> method:")
+												div.insertAdjacentHTML('beforeend', 'remove outliers with the <i>standard deviation</i> method:')
+
+												horizontal_table_to_select_columns(
+													['elms', position, 'sample', 'standard_deviation', 'columns']
+												)
+
+												let c = 0
+												
+												for(const response of csv_json.sample.standard_deviation.responses) {
+													new_sub_response(response, ['elms', position, 'sample', 'standard_deviation', 'responses', c++])
+												}
+
+											})
+										})
+									)
+
+									/*new_sub('div', div =>{
+
+										div.style.backgroundColor = 'rgba(255,255,255,.2)'
+
+										div.append(' sample')
+
+										
+
+									})*/
+
+
+
+									/********************
+									 * 
+									 *   csv response
+									 * 
+									 * *****************/
+									for(const csv_response_json of csv_json['responses']) {
+
+										new_sub_response(
+											csv_response_json,
+											['elms', position, 'responses', csv_json['responses'].indexOf(csv_response_json)]
+										)
+										
+										/*new_sub_container(
+											curr_elm,
+											'rgb(5, 155, 60)',
+											null,
+											e => {
+												//e.style.width = '100px'
+												//e.style.height = '100px'
+												//e.innerText = 'dfjklghdfjkghkfd'
+												//e.innerText = JSON.stringify(csv_response_json)
+												//new_sub('div', div=>{
+												//	div.innerText = JSON.stringify(csv_response_json)
+												//})
+												new_sub('div', div=> {
+													div.innerText = JSON.stringify(csv_response_json)
+												})
+											}
+										)*/
+									}
+
+
+									
+
+									
+									let query_key_iter = 0
+
+									for(const query_json of csv_json['requests']) {
+										const query_key = query_key_iter
+										new_sub_container(
+											curr_elm,
+											'rgb(5, 5, 60)',
+											() => delete_tumult_query(position, query_key),
+											e =>{
+												e.style.color = 'white'
+												/*new_sub('div', div => {
+													
+													div.innerText = JSON.stringify(query_json)
+												})*/
+												
+												const text_color = "rgba(240,240,240)"
+												//new_elm("table", e.children[0], table => {
+												new_sub("table", table => {
+
+													table.style.width = "100%"
+													table.style.color = text_color
+
+													new_sub('thead', table_head => {
+
+														new_sub('tr', tr => {
+
+															new_sub('th', th => {
+
+																
+															})
+
+															new_sub('th', th => {
+
+																new_sub('select', select => {
+
+																	select.style['background-color'] = 'rgba(255,255,255,.3)'
+																	select.style['color'] = 'rgb(255, 255, 255)'
+																	select.style['font-size'] = '15px'
+																	select.style['border-radius'] = '8px'
+
+																	for(const [nom, text] of [
+																		['count','count'],
+																		['count_distinct','count_distinct'],
+																		['quantile','quantile'],
+																		['min','min'],
+																		['max','max'],
+																		['median','median'],
+																		['sum','sum'],
+																		['average','average'],
+																		['variance','variance'],
+																		['stdev','stdev (écart-type)'],
+																	]) {
+																		new_sub('option', option => {
+
+																			option.style['background-color'] = 'rgb(25, 25, 25)'
+																			option.style['color'] = 'rgb(255, 255, 255)'
+																			option.style['font-size'] = '18px'
+																			if (nom == query_json['function']) {
+																				option.selected = 'selected'
+																			}
+																			option.value = nom
+																			option.textContent = text
+																		})
+																	}
+
+																	select.addEventListener(
+																		'change',
+																		() => {
+																			set(['elms',position, 'requests', query_key, 'function'], select.value)
+																			update_liste_des_csv()
+																		}
+																	)
+
+																})
+																
+															})
+
+
+															if(query_json['function_infos']['group_by_allowed']) new_sub('th', th => {
+
+																th.innerText = 'group_by'
+
+																/*new_sub('select', select => {
+
+																	for(const [nom, text] of [
+																		['group_by','group_by'],
+																		['no_grouping','no_grouping'],
+																	]) {
+																		new_sub('option', option => {
+																			if (nom == 'group_by' && query_json['group_by']['enabled']) {
+																				option.selected = 'selected'
+																			}
+																			if (nom == 'no_grouping' && !query_json['group_by']['enabled']) {
+																				option.selected = 'selected'
+																			}
+																			option.value = nom
+																			option.textContent = text
+																		})
+																	}
+
+																	select.addEventListener(
+																		'change',
+																		() => {
+																			set(['elms', position, 'requests', query_key, 'group_by', 'enabled'], select.value == 'no_grouping' ? false : true)
+																			update_liste_des_csv()
+																		}
+																	)
+																})*/
+															})
+														})
+													})
+
+													new_sub('tbody', table_body => {
+
+														for(const column of csv_json['header']) {
+
+															//new_elm('tr', table_body, tr => {
+															new_sub('tr', tr => {
+
+																new_sub('td', td => {
+																	td.innerText = column
+																})
+
+																new_sub('td', td => {
+
+																	ndiv(div=>{
+
+																		td.style['text-align'] = 'center'
+																		td.style['vertical-align'] = 'middle'
+																		
+																		if(query_json['function_infos']['nb_columns_max'] > 0) new_sub('input', checkbox => {
+																			checkbox.type = "checkbox"
+
+																			checkbox.style.width = "18px"
+																			checkbox.style.height = "18px"
+																			//log('query_json[columns] =', query_json['columns'])
+																			//log('column in query_json[columns] =', (column in query_json['columns']))
+																			//log('column =', column)
+																			//checkbox.style['background-color'] = 'rgba(20,20,20,1)'
+																			//checkbox.style['color'] = 'rgba(255,0,0,1)'
+																			//checkbox.style['accent-color'] = 'rgba(255, 194, 3, .4)'
+																			//checkbox.style['accent-color'] = 'rgba(255, 0, 0, .4)'
+																			checkbox.checked = (query_json['columns'].indexOf(column) >= 0)
+																			checkbox.addEventListener(
+																				'change',
+																				() => {
+																					if(checkbox.checked) {
+																						post('add_column', [[position, query_key], column])
+																					} else {
+																						post('remove_column', [[position, query_key], column])
+																					}
+																					
+																					update_liste_des_csv()
+																				}
+																			)
+																			
+																		})
+
+																		div.style.width = 'fit-content'
+
+																		info_bubble(div, column, {middle_right: true})
+																	})
+
+																																
+																})
+
+																if(query_json['function_infos']['group_by_allowed']) new_sub('td', td => {
+																	
+																	td.style['text-align'] = 'center'
+																	td.style['vertical-align'] = 'middle'
+
+																	//if(query_json['group_by']['enabled']) {// checkbox
+																	ndiv(div=>{
+																		new_sub('input', checkbox => {
+
+																			checkbox.type = "checkbox"
+																			checkbox.style.width = "18px"
+																			checkbox.style.height = "18px"
+																			checkbox.checked = (query_json['group_by']['column'] == column)
+																			checkbox.addEventListener(
+																				'change',
+																				() => {
+																					const column_value = checkbox.checked ? column : null
+																					set(['elms',position, 'requests', query_key, 'group_by', 'column'], column_value)
+																					update_liste_des_csv()
+																				}
+																			)
+
+
+																			
+																		})
+
+																		div.style.width = 'fit-content'
+
+																		
+																		
+
+																		info_bubble(div, column, {middle_right: true})
+
+																		
+																	})
+																	//}
+																})
+															})
+														}
+													})
+												})
+												
+
+												
+
+
+
+
+												expand_able(
+													'more options',
+													rjson,
+													['elms', position, 'requests', query_key, 'more_options_expanded'],
+													() => new_sub('table', table => {
+
+
+
+														if(query_json['clamp_range'] !== null || query_json['quantile'] !== null) new_sub('div', div => {
+
+															new_sub('table', table => {
+
+																table.style.width = "100%"
+																table.style.color = text_color
+																//table.style.tableLayout = 'fixed'
+
+																new_sub('thead')
+																
+																new_sub('tbody', tbody => {
+
+																	// clamp min
+																	if(query_json['clamp_range'] !== null) new_sub('tr', tr =>{
+
+																		new_sub('td', td =>{
+																			td.style.whiteSpace = 'nowrap'
+																			td.innerText = 'clamp min value'
+																		
+																		})
+
+																		new_sub('td', td =>{
+
+																			new_sub('input', input =>{
+
+																				input.style = 'number'
+																				input.style.width = '50px'
+																				input.style['background-color'] = 'rgba(255,255,255,.3)'
+																				input.style['color'] = 'rgb(255,255,255)'
+																				input.style['border-radius'] = '8px'
+																				input.style['border-width'] = '0px'
+																				input.style['text-align'] = 'center'
+																				input.value = query_json['clamp_range'][0]
+																				input.addEventListener(
+																					'change',
+																					ev => {
+																						set(['elms', position, 'requests', query_key, 'clamp_range', 0], parseFloat(input.value))
+																						update_liste_des_csv()
+																					}
+																				)
+																			})
+																		})
+																	})
+
+																	// clamp max
+																	if(query_json['clamp_range'] !== null) new_sub('tr', tr =>{
+
+																		new_sub('td', td =>{
+																			td.style.whiteSpace = 'nowrap'
+																			td.innerText = 'clamp max value'
+
+																		})
+
+																		new_sub('td', td =>{
+
+																			//td.style['text-align'] = 'left'
+																			//td.style['vertical-align'] = 'middle'
+
+																			new_sub('input', input =>{
+
+																				
+
+																				input.style = 'number'
+																				input.style.width = '50px'
+																				input.style['background-color'] = 'rgba(255,255,255,.3)'
+																				input.style['color'] = 'rgb(255,255,255)'
+																				input.style['border-radius'] = '8px'
+																				input.style['border-width'] = '0px'
+																				input.style['text-align'] = 'center'
+																				//input.style.direction = 'rtl'
+																				input.value = query_json['clamp_range'][1]
+																				input.addEventListener(
+																					'change',
+																					ev => {
+																						set(['elms', position, 'requests', query_key, 'clamp_range', 1], parseFloat(input.value))
+																						update_liste_des_csv()
+																					}
+																				)
+																			})
+																		})
+																	})
+
+																	if(query_json['quantile'] !== null) new_sub('tr', tr =>{
+
+																		new_sub('td', td =>{
+
+																			td.innerText = 'quantile'
+
+																		})
+
+																		new_sub('td', td =>{
+
+																			new_sub('input', input => {
+
+																				input.type = 'number'
+																				input.style.width = '50px'
+																				input.style['background-color'] = 'rgba(255,255,255,.3)'
+																				input.style['color'] = 'rgb(255,255,255)'
+																				input.style['border-radius'] = '8px'
+																				input.style['border-width'] = '0px'
+																				input.style['text-align'] = 'center'
+																				input.value = query_json['quantile']
+
+																				input.addEventListener('change', ev=>{
+
+																					set(['elms', position, 'requests', query_key, 'quantile'], parseFloat(input.value))
+
+																				})
+																			})
+																		})
+																	})
+																})
+															})
+														})
+
+
+
+														table.style.width = '100%'
+														table.style.color = text_color
+														table.style['border-spacing'] = '1em 0.5em'
+														//table.style.border = '20px solid black'
+														//table.style.outline = '20px solid red'
+
+														table.style.margin = '5px 0 0 0'
+
+														new_sub('thead')
+														
+														new_sub('tbody', tbody => {
+															
+															new_sub('tr', tr => {
+
+																
+																
+																new_sub('td', td => {
+																	
+																	//td.innerText = 'le résultat doit être positif'
+																	td.innerText = 'positive result'
+																	td.style.whiteSpace = 'nowrap'
+																	td.style.width = '1%'
+																	//td.style.backgroundColor = 'blue'
+																})
+
+																new_sub('td', td => {
+
+																	//td.style.textAlign = 'left'
+
+																	//td.style.backgroundColor = 'red'
+																	
+																	new_sub('input', checkbox => {
+
+																		checkbox.type = 'checkbox'
+
+																		checkbox.checked = query_json['make_result_positive']
+
+																		checkbox.style.width = "18px"
+																		checkbox.style.height = "18px"
+																		
+																		checkbox.addEventListener('change', ev => {
+																			set(['elms', position, 'requests', query_key, 'make_result_positive'], ev.currentTarget.checked ? true : false)
+																		})
+
+																	})
+																})
+															})
+
+
+															new_sub('tr', tr => {
+																new_sub('td', td => {
+																	
+																	//td.innerText = 'le résultat doit être positif'
+																	td.innerText = 'budget privacy repartition'
+																	td.style.whiteSpace = 'nowrap'
+																	td.style.width = '1%'
+																	//td.style.backgroundColor = 'blue'
+																})
+
+																new_sub('input', input => {
+																	
+																	input.type = 'number'
+																	input.style.width = '3em'
+
+																	input.value = query_json['budget_privacy_ponderation']
+
+																	input.addEventListener('change', ev => {
+																		set(['elms', position, 'requests', query_key, 'budget_privacy_ponderation'], parseFloat(input.value))
+																	})
+																})
+															})
+
+
+															new_sub('tr', tr => {
+
+																new_sub('td', td => {
+																	
+																	//td.innerText = 'le résultat doit être positif'
+																	td.innerText = 'filter expression'
+																	td.style.whiteSpace = 'nowrap'
+																	td.style.width = '1%'
+																	//td.style.backgroundColor = 'blue'
+																})
+
+																new_sub('textarea', input => {
+																	
+																	//input.type = 'text'
+																	//input.style.width = '100%'
+																	input.value = query_json['filter'] ? query_json['filter'] : ''
+
+																	//function fit_to_content() { input.style.width = Math.max(6, input.value.length) + "ch"; }
+																	
+																	//addEventListener('input', fit_to_content);
+																	//fit_to_content();
+
+																	
+																	
+																	
+
+																	input.addEventListener('change', ev => {
+																		set(['elms', position, 'requests', query_key, 'filter'], input.value)
+																	})
+
+																	// make the color red if a filter error occured
+																	let filter_error_occured = false
+																	for(const res of query_json['responses']) {
+																		if(res.type == 'error'){
+																			if(res.exception?.startsWith('Invalid filter expression')) {
+																				filter_error_occured = true
+																				break
+																			}
+																		}
+																	}
+																	if(filter_error_occured) {
+																		input.style.color = 'red'
+																	}
+																})
+															})
+
+														})
+													})
+												)
+
+												
+												for(const response of query_json['responses']) {
+
+													new_sub_response(response, ['elms', position, 'requests', query_key, 'responses', query_json['responses'].indexOf(response)])
+													
+												}
+												
+											}
+										)
+										++query_key_iter
+									}
+
+									new_sub('div', div => {
+										div.style.height = '20px'
+										div.style.width = '100%'
+										new_add_btn(curr_elm, () =>{
+											add_tumult_query(position)
+										})
+									})
+
+									
+
+
+									
+
+
+									/*{// delete btn
+
+										
+
+										var btn = cloneCanvas(delete_ico)
+										btn.addEventListener('click', ev => remove_csv(position))
+
+										//var center = document.createElement("center");
+										//center.appendChild(btn)
+										
+										//e.appendChild(btn)
+										e.children[1].appendChild(btn)
+										
+									}*/
+
+									//liste_des_csv.prepend(e)
+
+									
+								})
+								
+								
+							}
+							/*else if (csv_json['type'] == 'csv_result') {
+
+								new_elm('div', liste_des_csv, div => {
+									div.style['white-space'] = 'pre-wrap'
+									div.innerHTML = csv_json['name'].replace('\n','<br>')
+								})
+							}*/
+
+							++pos
+						}
+
+						// restore croll position
+						//liste_des_csv.scrollLeft = scroll_x
+						//liste_des_csv.scrollTop = scroll_y
+
+						// load srcoll position
+						liste_des_csv.scrollLeft = rjson['scroll_x']
+						liste_des_csv.scrollTop = rjson['scroll_y']
+					}
+				)
+			}
+
+
+			update_liste_des_csv()
+
+			//drop_on_me.ondrop = async (ev) => {
+			//document.ondrop = async (ev) => {
+			document.addEventListener("drop", async (ev) => {
+				// pretty simple -- but not for IE :(
+				//fileInput.files = ev.dataTransfer.files;
+
+				//log(ev)
+
+				const dT = new DataTransfer()
+				var reader = new FileReader()
+
+				//const EventEmitter = require('events')
+				//const bus = new EventEmitter()
+
+				
+
+				
+				
+
+				/*const newDiv = document.createElement("div")
+				newDiv.addEventListener("name-of-event", function(e) {
+					console.log(e.detail); // Prints "Example of an event"
+				})*/
+				//var event = new CustomEvent("name-of-event", { "detail": "Example of an event" })
+				//newDiv.dispatchEvent(event)
+
+
+				class Wait_to_go {
+
+					constructor(){
+						this.element = document.createElement("div")
+						this.block()
+					}
+
+					block() {
+						this.blocked = true
+					}
+
+					go() {
+						this.blocked = false
+						var event = new CustomEvent("go-event", { "detail": "Example of an event" })
+						this.element.dispatchEvent(event)
+					}
+
+					// exemple: await wait_to_go.wait()
+					wait() {
+						if(!this.blocked) return new Promise((resolve) => {resolve()})
+						else {
+							return new Promise((resolve) => {
+								const listener = () => {
+									this.element.removeEventListener("go-event", listener)
+									resolve()
+								}
+								this.element.addEventListener("go-event", listener)
+							})
+						}
+					}
+				}
+
+
+				var wait_to_go = new Wait_to_go()
+
+				
+
+				var file_txt = null
+
+				reader.onload = async (event) => {
+					console.log(event.target.result);
+					file_txt = event.target.result
+					wait_to_go.go()
+				}
+
+
+				for(var file of ev.dataTransfer.files) {
+					log('file =', file)
+					
+					wait_to_go.block()
+
+					reader.readAsText(file)
+					//wait_to_go.go()
+
+					//await sleep(1000)
+					
+					
+					await wait_to_go.wait()
+
+
+					let formData = new FormData()
+
+					formData.append("csv_txt", file_txt)
+					//formData.append("csv_path", file.get_name)
+
+
+					//fetch('http://127.0.0.1:8080/upload/csv', {method: "POST", body: formData})
+
+					post('new csv', {'filename': file.name, 'txt': file_txt})
+						.then(response => update_liste_des_csv())
+
+					/*fetch(
+						'http://127.0.0.1:8080',
+						{
+							method: "POST",
+							body: formData,
+							headers: {
+								//"Content-Type": "text/plain"
+								'Accept': 'application/json',
+							},
+						}
+					)
+					.then(response => update_liste_des_csv())*/
+				}
+
+
+				/*headers: {
+					"Content-Type": "text/plain"
+				},*/
+				
+
+				// If you want to use some of the dropped files
+				//const dT = new DataTransfer();
+				//dT.items.add(evt.dataTransfer.files[0]);
+				//dT.items.add(evt.dataTransfer.files[3]);
+				//fileInput.files = dT.files;
+
+				ev.preventDefault();
+			})
+
+
+
+
+
+		</script>
+	</body>
+</html>

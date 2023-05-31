@@ -1,0 +1,116 @@
+
+<html>
+
+
+	<div
+		id = 'result'
+	>
+	no result
+	</div>
+
+
+	<script>
+
+		
+
+		console.log('start')
+
+		//console.log($("result"))
+
+		const html_result = document.getElementById('result')
+
+
+		const f = (x, y) => {
+			return 10-y+Math.sin(y)+.5-Math.cos(x)
+			//return Math.sqrt(x**2 + y**2)
+		}
+
+		let s = ['']
+
+
+		const add_line = (line)=>{
+			s[0] += line + '<br>'
+
+		}
+		
+		const newton = (
+			f /* from x,y to scalar */,
+			x_start,
+			y_start,
+			dist_to_zero_break,
+			nb_loops_max = 200
+		) => {
+			
+			var x = x_start
+			var y = y_start
+			
+			for(var c = 0; c < nb_loops_max; ++c) {
+
+				const fxy = f(x,y)
+
+				if (Math.abs(fxy) <= dist_to_zero_break) {
+					break
+				}
+
+				const dx = .0001
+				const dy = .0001
+				
+
+				var df_x = f(x+.5*dx,y) - f(x-.5*dx,y)
+				var df_y = f(x,y+.5*dy) - f(x,y-.5*dy)
+				const df_min = .5*dist_to_zero_break
+
+				/*dfx_sur_dx = df_x/dx
+				dfy_sur_dy = df_y/dy*/
+				
+				if (Math.abs(df_x) < df_min) df_x = (df_x > 0 ? 1 : -1)*df_min
+				if (Math.abs(df_y) < df_min) df_y = (df_y > 0 ? 1 : -1)*df_min
+
+				x -= .5*(dx/df_x)*fxy
+				y -= .5*(dy/df_y)*fxy
+
+				/*x -= .5*fxy/dfx_sur_dx
+				y -= .5*fxy/dfy_sur_dy*/
+
+				add_line('f(' + x + ',   '+y+') =   ' + f(x,y))
+			}
+
+			return [x, y]
+		}
+
+		
+		newton(f, 2, 2, .000001)
+		
+
+		/*x0 = f(0,0)
+		x1 = f(.3,0)
+		x2 = null
+		s = ''
+		for(var c = 0; c < 10; ++c) {
+
+			df = f(x1,0) - f(x0,0)
+			sg_df = df > 0 ? 1 : -1
+
+			if (Math.abs(df) < .00001) {
+				df = sg_df*.00001
+			}
+
+			x2 = x1 - ((x1-x0)/df)*f(x1)
+
+
+			x0 = x1
+			x1 = x2
+			s += 'f(x = ' + x2 + ') = ' + f(x2) + '<br>'
+		}
+
+		html_result.innerHTML = s*/
+		
+
+		html_result.innerHTML = s[0]
+
+		console.log(s)
+		console.log('end')
+	
+	</script>
+
+</html>

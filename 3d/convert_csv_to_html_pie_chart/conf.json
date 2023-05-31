@@ -1,0 +1,8 @@
+{
+    "src": {
+        "comment:": "csv avec le nom en 1iere colonne et avec la quatités en 2iéme colonne",
+        "path": "test_pie2.csv",
+        "delemiter": ";"
+    },
+    "dst": "result.html"
+}
