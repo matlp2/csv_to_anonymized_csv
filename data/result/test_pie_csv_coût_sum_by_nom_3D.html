@@ -1,0 +1,2253 @@
+
+<html >
+	<header >
+		<meta charset="UTF-8">
+	</header>
+	<body style="margin:0; overflow-y:hidden; max-width:100%;overflow-x:hidden;">
+		<div class="wrapper" id="superposition">
+			<style >
+				
+					.wrapper {
+						position: relative;
+						width: 100%;
+						height: 100%;
+					}
+					.wrapper canvas {
+						position: absolute;
+						top: 0;
+						left: 0;
+					}
+			</style>
+			<canvas style="width:100%;height:100%;pointer-events: none;" id = "my_3d_canvas">
+			</canvas>
+			<canvas style="width:100%;height:100%;pointer-events: none;" id = "my_2d_canvas">
+			</canvas>
+			<script >
+				input_data = [
+						{
+							'name' : 'piste',
+							'quantity': -450378.0,
+							//'color': new Float32Array([0,1,1,1])
+							'color': new Float32Array([0.563209426815666,0.3616297168024025,0.695009799416202,1])
+						},
+						{
+							'name' : 'radios',
+							'quantity': -633124.0,
+							//'color': new Float32Array([0,1,1,1])
+							'color': new Float32Array([0.2609169063979787,0.3366641894713669,0.04572689908615635,1])
+						},
+						{
+							'name' : 'signalisation',
+							'quantity': -87160.0,
+							//'color': new Float32Array([0,1,1,1])
+							'color': new Float32Array([0.5267487607701384,0.08647938128637611,0.34185510208615777,1])
+						},
+						{
+							'name' : 'vehicules',
+							'quantity': -3587137.0,
+							//'color': new Float32Array([0,1,1,1])
+							'color': new Float32Array([0.20686510595219287,0.2594148808405399,0.650125102417705,1])
+						},
+				]
+			</script>
+		</div>
+		<div id = "options_panel" style="background-color:rgba(255, 255, 255, .7)">
+			<table  width=100%>
+				<tr >
+					<td >
+						<button onclick="save_image()" style="display:block;margin-left:auto;margin-right:auto">
+							<text >
+								télécharger l'image
+							</text>
+						</button>
+					</td>
+					<td >
+						<button onclick="randomise_colors()" style="display:block;margin-left:auto;margin-right:auto">
+							<text >
+								coleurs au hasard
+							</text>
+						</button>
+					</td>
+					<td >
+						<button onclick="switch_trier_input_data()" style="display:block;margin-left:auto;margin-right:auto">
+							<text >
+								trier
+							</text>
+						</button>
+					</td>
+					<td >
+						<center >
+							<table >
+								<tr onclick="switch_see_labels()">
+									<td style="display:block;margin-left:auto;margin-right:auto">
+										<center >
+											<div onclick="">
+												<input type="checkbox" checked id="checkbox_see_labels">
+												</input>
+											</div>
+										</center>
+									</td>
+									<td >
+										labels
+									</td>
+								</tr>
+								<tr onclick="switch_voir_pourcentages()">
+									<td style="display:block;margin-left:auto;margin-right:auto">
+										<center >
+											<div onclick="">
+												<input type="checkbox" checked id="checkbox_voir_pourcentages" style="pointer-events:none;">
+												</input>
+											</div>
+										</center>
+									</td>
+									<td >
+										pourcentages
+									</td>
+								</tr>
+								<tr onclick="switch_voir_qté()">
+									<td style="display:block;margin-left:auto;margin-right:auto">
+										<center >
+											<div onclick="">
+												<input type="checkbox" checked id="checkbox_voir_qté" style="pointer-events:none;">
+												</input>
+											</div>
+										</center>
+									</td>
+									<td >
+										qté
+									</td>
+								</tr>
+							</table>
+						</center>
+					</td>
+				</tr>
+			</table>
+			<table  width=100%>
+				<tr >
+					<td >
+						<p id="nom_range_rayon_interne_ratio" style="text-align:center">
+							rayon interne
+						</p>
+						<input type="range" id="range_rayon_interne_ratio" min="0" max="1" step=".001" style="display:block;margin-left:auto;margin-right:auto">
+						</input>
+					</td>
+					<td >
+						<p id="nom_range_rayon" style="text-align:center">
+							rayon
+						</p>
+						<input type="range" id="range_rayon" min="0" max="1" step=".001" style="display:block;margin-left:auto;margin-right:auto">
+						</input>
+					</td>
+					<td >
+						<p id="nom_range_separate_pieces" style="text-align:center">
+							separation
+						</p>
+						<input type="range" id="range_separate_pieces" min="0" max="1" step=".001" style="display:block;margin-left:auto;margin-right:auto">
+						</input>
+					</td>
+					<td >
+						<p id="nom_range_hauteur" style="text-align:center">
+							hauteur
+						</p>
+						<input type="range" id="range_hauteur" min="0" max="1" step=".001" style="display:block;margin-left:auto;margin-right:auto">
+						</input>
+					</td>
+					<td >
+						<p id="nom_range_ombre" style="text-align:center">
+							ombre
+						</p>
+						<input type="range" id="range_ombre" min="0" max="1" step=".001" style="display:block;margin-left:auto;margin-right:auto">
+						</input>
+					</td>
+					<td >
+						<p id="nom_range_others_threshold" style="text-align:center">
+							others threshold
+						</p>
+						<input type="range" id="range_others_threshold" min="0" max="1" step=".001" style="display:block;margin-left:auto;margin-right:auto">
+						</input>
+					</td>
+					<td >
+						<p id="nom_range_bg_alpha" style="text-align:center">
+							alpha fond
+						</p>
+						<input type="range" id="range_bg_alpha" min="0" max="1" step=".001" style="display:block;margin-left:auto;margin-right:auto">
+						</input>
+					</td>
+					<td >
+						<p style="text-align:center">
+							couleur fond
+						</p>
+						<input type="color" id="color_bg" style="display: block;margin-left: auto; margin-right: auto">
+						</input>
+					</td>
+					<td >
+						<p id="nom_range_rayon_labels" style="text-align:center">
+							rayon labels
+						</p>
+						<input type="range" id="range_rayon_labels" min="0" max="1" step=".001" style="display:block;margin-left:auto;margin-right:auto">
+						</input>
+					</td>
+					<td >
+						<p id="nom_range_taille_labels" style="text-align:center">
+							taille labels
+						</p>
+						<input type="range" id="range_taille_labels" min="0" max="1" step=".001" style="display:block;margin-left:auto;margin-right:auto">
+						</input>
+					</td>
+				</tr>
+			</table>
+			<center >
+				cliquez sur les les labels pour changer les couleurs
+			</center>
+		</div>
+		
+				<canvas
+					style="
+					/*right:10%;*/
+					left:50%;
+					transform: translate(-50%, 0%);
+					bottom:0%;
+		
+					/*width:5%;
+					height:5%;*/
+					position: absolute;
+					/*background-color:rgba(255, 0, 0, 0.8);*/
+					background-color:rgba(0, 0, 0, 0);
+					"
+					id = "btn_expand"
+				>	
+				</canvas>
+				
+		
+					<script>
+						log = console.log
+						superposition = document.getElementById("superposition")
+						options_panel = document.getElementById("options_panel")
+						btn_expand = document.getElementById("btn_expand")
+		
+		
+						nb_click_on_btn_expand = 0
+						
+						maj_image_btn_expand = () => {
+							var ctx = btn_expand.getContext("2d")
+							const w = parseFloat(btn_expand.clientWidth)
+							const h = parseFloat(btn_expand.clientHeight)
+							//ctx.clearRect(0, 0, w, h)
+							//ctx.fillStyle = "rgba(0,0,0,0)"
+							//ctx.fillStyle = "green";
+							//ctx.fillRect(0, 0, w, h)
+							ctx.clearRect(0, 0, w, h)
+							ctx.lineWidth = .08*w;
+							ctx.strokeStyle = "rgba(200,200,200,.5)";
+							ctx.beginPath();
+							ctx.arc(w/2, h/2, (w - ctx.lineWidth)/2, 0, 2 * Math.PI);
+							ctx.stroke();
+		
+							ctx.beginPath();
+							var vers_le_haut = (nb_click_on_btn_expand % 2 == 0)
+							ctx.lineTo(.2*w, (vers_le_haut ? (1-.35) : .35)*h);
+							ctx.lineTo(.5*w, (vers_le_haut ? (1-.65) : .65)*h);
+							ctx.lineTo(.8*w, (vers_le_haut ? (1-.35) : .35)*h);
+							ctx.stroke();
+						}
+		
+						maj_wh_btn_expand = () => {
+							var l = Math.min(30, Math.min(.25*superposition.clientWidth, .25*superposition.clientHeight))
+							btn_expand.style.width = l+"px"
+							btn_expand.style.height = l+"px"
+							btn_expand.clientWidth = l
+							btn_expand.clientHeight = l
+							btn_expand.width = l
+							btn_expand.height = l
+							maj_image_btn_expand()
+						}
+		
+		
+						
+						//ctx.globalAlpha = 0.5
+		
+		
+						btn_expand.onclick = () => {
+							log('CLICK on btn_expand')
+		
+							steps = [
+								{ transform: 'translateY('+(nb_click_on_btn_expand++%2 == 1 ? '0px' : '-'+options_panel.clientHeight+'px') },
+							]
+		
+							options = {
+								duration: 300,
+								iterations: 1,
+								fill: 'forwards',
+							}
+		
+							options_panel.animate(
+								steps,
+								options
+							);
+		
+							btn_expand.animate(
+								steps,
+								options
+							);
+							
+							maj_image_btn_expand()
+						}
+		
+						fade_timeout = null
+						fade = null
+						window.addEventListener('mousemove', () => {
+							btn_expand.style.opacity = "1";
+							if(fade_timeout !== null) clearTimeout(fade_timeout)
+							fade_timeout = setTimeout(
+								()=>{
+									if(fade !== null) clearInterval(fade);
+									fade = setInterval(() => {
+										//log('FADING')
+										btn_expand.style.opacity = Math.max(0, btn_expand.style.opacity-.015); // 500 milliseconds
+										if (btn_expand.style.opacity <= 0) {
+												clearInterval(fade);
+												fade = null
+										}
+								},
+								10);
+								},
+								1000
+							)
+						})
+		
+						maj_wh_btn_expand()
+		
+						window.addEventListener('resize', (ev) => {
+							maj_wh_btn_expand()
+						}, true);
+					</script>
+					
+		<script >log = console.log
+sin = Math.sin
+cos = Math.cos
+min = Math.min
+max = Math.max
+abs = Math.abs
+exp = Math.exp
+sqrt = Math.sqrt
+round = Math.round
+PI = Math.PI
+componentToHex = (c) => {
+var hex = c.toString(16);
+return hex.length == 1 ? "0" + hex : hex;
+}
+rgbToHex = (r, g, b) => {
+return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+hexToRgb = (hex) => {
+var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+return result ? [
+parseInt(result[1], 16),
+parseInt(result[2], 16),
+parseInt(result[3], 16)
+] : null;
+}
+var canvas = document.getElementById('my_3d_canvas');
+gl = canvas.getContext('webgl2');
+var canvas_2d = document.getElementById('my_2d_canvas');
+const Iy = canvas_2d.getContext("2d");
+class I6 extends Float32Array {
+constructor(n = 0) {
+super(3*n)
+}
+Ih(i, x, y, z) {
+this[3*i + 0] = x
+this[3*i + 1] = y
+this[3*i + 2] = z
+}
+get vertex_count() {
+return this.length/3
+}
+}
+class I5{
+constructor() {
+this.vao = gl.createVertexArray();
+this.I7 = gl.createBuffer();
+this.I8 = gl.createBuffer();
+this.I9 = gl.createBuffer();
+this.Ib = 0
+}
+set_Ic(Ic){
+if (!(Ic instanceof Float32Array)) throw new Error('Ic must be Float32Array');
+gl.bindBuffer(gl.ARRAY_BUFFER, this.I7);
+gl.bufferData(gl.ARRAY_BUFFER, Ic, gl.DYNAMIC_DRAW);
+gl.bindBuffer(gl.ARRAY_BUFFER, null);
+}
+set_Id(Id){
+if (!(Id instanceof Uint16Array)) throw new Error('Id must be Uint16Array');
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.I8);
+gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, Id, gl.DYNAMIC_DRAW);
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+this.Ib = Id.length
+}
+set_colors(colors){
+if (!(colors instanceof Float32Array)) throw new Error('colors must be Float32Array');
+gl.bindBuffer(gl.ARRAY_BUFFER, this.I9);
+gl.bufferData(gl.ARRAY_BUFFER, colors, gl.DYNAMIC_DRAW);
+gl.bindBuffer(gl.ARRAY_BUFFER, null);
+}
+/*set_Ie(Ie){
+if (!(Ie instanceof Float32Array)) throw new Error('Ie must be Float32Array');
+gl.bindBuffer(gl.ARRAY_BUFFER, this.Ia);
+gl.bufferData(gl.ARRAY_BUFFER, Ie, gl.DYNAMIC_DRAW);
+gl.bindBuffer(gl.ARRAY_BUFFER, null);
+}*/
+set(I3){
+this.set_Id(I3.Id)
+this.set_Ic(I3.Ic)
+this.set_colors(I3.colors)
+this.If()
+}
+If(){
+gl.bindVertexArray(this.vao);
+{
+gl.bindBuffer(gl.ARRAY_BUFFER, this.I7);
+var coord = gl.getAttribLocation(shaderProgram, "coordinates");
+gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 0, 0);
+gl.enableVertexAttribArray(coord);
+}
+{
+gl.bindBuffer(gl.ARRAY_BUFFER, this.I9);
+var colors = gl.getAttribLocation(shaderProgram, "colors");
+gl.vertexAttribPointer(colors, 4, gl.FLOAT, false, 0, 0); 
+gl.enableVertexAttribArray(colors);
+}
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.I8);
+gl.bindVertexArray(null);
+}
+Ig() {
+gl.bindVertexArray(this.vao);
+gl.drawElements(gl.TRIANGLES, this.Ib, gl.UNSIGNED_SHORT, 0);
+gl.bindVertexArray(null);
+}
+}
+concatTypedArrays = (a, b) => { // a, b TypedArray of same type
+var c = new (a.constructor)(a.length + b.length);
+c.set(a, 0);
+c.set(b, a.length);
+return c;
+}
+class I3{
+constructor() {
+this.Ic = new I6();
+this.Id = new Uint16Array();
+this.colors = new Float32Array();
+}
+I4(){
+o = new I5()
+o.set_Id(this.Id);
+o.set_Ic(this.Ic);
+o.set_colors(this.colors);
+return o
+}
+add(I3) {
+var L1 = this.Ic.length/3
+var ix2 = I3.Id.slice(0);
+for (var i = 0; i < ix2.length; ++i) ix2[i] += L1
+this.Ic = concatTypedArrays(new Float32Array(this.Ic), new Float32Array(I3.Ic))
+this.Id = concatTypedArrays(this.Id, ix2)
+this.colors = concatTypedArrays(this.colors, I3.colors)
+}
+}
+rayon_separe_parts_coeff = .05
+/*I2 = (Iv_min, Iv_max, n, R, h, color) => {
+vs = new I6(2*n + 2);
+ix = new Uint16Array(3*4*(n-1) + 4*3);
+cs = new Float32Array(4*(2*n + 2));
+a_min = Iv_min*2*Math.PI
+a_max = Iv_max*2*Math.PI
+for (c = 0; c < n; ++c) {
+t = parseFloat(c)/parseFloat(n-1)
+a = a_min + t*(a_max-a_min)
+x = R*Math.cos(a)
+y = R*Math.sin(a)
+vs.Ih(2*c, x, y, .5*h)
+vs.Ih(2*c+1, x, y, -.5*h)
+j = 2*4*c
+cs[j + 0] = color[0]
+cs[j + 1] = color[1]
+cs[j + 2] = color[2]
+cs[j + 3] = color[3]
+cs[j + 4] = color[0]
+cs[j + 5] = color[1]
+cs[j + 6] = color[2]
+cs[j + 7] = color[3]
+if (c < n-1) {
+k = 3*4*c
+c_suiv = (c+1)%n
+ix[k + 0] = 2*n
+ix[k + 1] = 2*c
+ix[k + 2] = 2*c_suiv
+ix[k + 3] = 2*c
+ix[k + 4] = 2*c+1
+ix[k + 5] = 2*c_suiv
+ix[k + 6] = 2*c+1
+ix[k + 7] = 2*c_suiv
+ix[k + 8] = 2*c_suiv+1
+ix[k + 9] = 2*n+1
+ix[k + 10] = 2*c+1
+ix[k + 11] = 2*c_suiv+1
+}
+}
+vs.Ih(2*n, 0, 0, .5*h)
+vs.Ih(2*n+1, 0, 0, -.5*h)
+j = 2*4*n
+cs[j + 0] = color[0]
+cs[j + 1] = color[1]
+cs[j + 2] = color[2]
+cs[j + 3] = color[3]
+cs[j + 4] = color[0]
+cs[j + 5] = color[1]
+cs[j + 6] = color[2]
+cs[j + 7] = color[3]
+k = 3*4*(n-1)
+ix[k + 0] = 2*n
+ix[k + 1] = 0
+ix[k + 2] = 1
+ix[k + 3] = 2*n
+ix[k + 4] = 2*n+1
+ix[k + 5] = 1
+ix[k + 6] = 2*n
+ix[k + 7] = 2*n-1
+ix[k + 8] = 2*n-2
+ix[k + 9] = 2*n
+ix[k + 10] = 2*n+1
+ix[k + 11] = 2*n-1
+for(var k = 0; k < vs.length; k+=3) {
+a = .5*(a_min+a_max)
+vs[k+0] += rayon_separe_parts_coeff*R*cos(a)
+vs[k+1] += rayon_separe_parts_coeff*R*sin(a)
+}
+o = new I3()
+o.Ic = vs
+o.Id = ix
+o.colors = cs
+return o
+}*/
+I2 = (Iv_min, Iv_max, n, r, R, h, color) => {
+vs = new I6(4*n);
+ix = new Uint16Array(3*8*(n-1) + 3*4);
+cs = new Float32Array(4*4*n);
+a_min = Iv_min*2*Math.PI
+a_max = Iv_max*2*Math.PI
+for(var j = 0; j < cs.length; j += 4) {
+cs[j + 0] = color[0]
+cs[j + 1] = color[1]
+cs[j + 2] = color[2]
+cs[j + 3] = color[3]
+}
+for (var i = 0; i < n; ++i) {
+const t = parseFloat(i)/parseFloat(n-1)
+const a = a_min + t*(a_max-a_min)
+const c = cos(a)
+const s = sin(a)
+const X = R*c
+const Y = R*s
+const x = r*c
+const y = r*s
+vs.Ih(4*i+0, x, y, -.5*h)
+vs.Ih(4*i+1, x, y, .5*h)
+vs.Ih(4*i+2, X, Y, .5*h)
+vs.Ih(4*i+3, X, Y, -.5*h)
+/*for(var j = 4*4*i; j < 4*4*(i+1); j += 4) {
+cs[j + 0] = color[0]
+cs[j + 1] = color[1]
+cs[j + 2] = color[2]
+cs[j + 3] = color[3]
+}*/
+if (i < n-1) {
+const k = 3*8*i
+const j = (i+1)%n
+for(var u = 0; u < 4; ++u) {
+ix[k + 0 + 6*u] = 4*i+u
+ix[k + 1 + 6*u] = 4*i+(1+u)%4
+ix[k + 2 + 6*u] = 4*j+u
+ix[k + 3 + 6*u] = 4*i+(1+u)%4
+ix[k + 4 + 6*u] = 4*j+u
+ix[k + 5 + 6*u] = 4*j+(1+u)%4
+}
+}
+}
+k = 3*8*(n-1)
+ix[k + 0] = 0
+ix[k + 1] = 1
+ix[k + 2] = 2
+ix[k + 3] = 0
+ix[k + 4] = 2
+ix[k + 5] = 3
+ix[k + 6] = 4*(n-1)+0
+ix[k + 7] = 4*(n-1)+1
+ix[k + 8] = 4*(n-1)+2
+ix[k + 9] = 4*(n-1)+0
+ix[k + 10] = 4*(n-1)+2
+ix[k + 11] = 4*(n-1)+3
+for(var k = 0; k < vs.length; k+=3) {
+a = .5*(a_min+a_max)
+vs[k+0] += rayon_separe_parts_coeff*R*cos(a)
+vs[k+1] += rayon_separe_parts_coeff*R*sin(a)
+}
+o = new I3()
+o.Ic = vs
+o.Id = ix
+o.colors = cs
+return o
+}
+const make_bar = (x, y, z, dx, dy, dz, color) => {
+    vs = new I6(8)
+    cs = new Float32Array(4*8)
+    ix = new Uint16Array([
+        0,1,2,
+        1,2,3,
+        0,1,4,
+        1,4,5,
+        
+        4,5,6,
+        5,6,7,
+        1,3,5,
+        3,5,7,
+        0,2,4,
+        2,4,6,
+        2,3,6,
+        3,6,7
+    ])
+    for(c = 0; c < 8; ++c) {
+        cs[4*c+0] = color[0]
+        cs[4*c+1] = color[1]
+        cs[4*c+2] = color[2]
+        cs[4*c+3] = color[3]
+    }
+    vs.Ih(0, x, y, z)
+    vs.Ih(1, x, y, z + dz)
+    vs.Ih(2, x, y + dy, z)
+    vs.Ih(3, x, y + dy, z + dz)
+    vs.Ih(4, x + dx, y, z)
+    vs.Ih(5, x + dx, y, z + dz)
+    vs.Ih(6, x + dx, y + dy, z)
+    vs.Ih(7, x + dx, y + dy, z + dz)
+    o = new I3()
+    o.Ic = vs
+    o.Id = ix
+    o.colors = cs
+    return o
+}
+class background_color extends Float32Array {
+constructor(){ super([0,0,0,1]) }
+set(bg) {
+this[0] = bg[0]
+this[1] = bg[1]
+this[2] = bg[2]
+this[3] = bg[3]
+gl.clearColor(this[0], this[1], this[2], this[3])
+}
+}
+bg = new background_color()
+gl.disable(gl.CULL_FACE)
+gl.clearColor(bg[0], bg[1], bg[2], bg[3])
+gl.enable(gl.DEPTH_TEST)
+gl.enable(gl.BLEND)
+gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+var P = null
+var IG = null
+IC = (canvas) => {
+const IgWidth  = canvas.clientWidth * window.devicePixelRatio;
+const IgHeight = canvas.clientHeight * window.devicePixelRatio;
+const needResize = canvas.width  !== IgWidth ||
+canvas.height !== IgHeight;
+if (needResize) {
+canvas.width  = IgWidth;
+canvas.height = IgHeight;
+}
+return needResize;
+}
+class Ir extends Float32Array{
+constructor(mat4x4 = null){
+super(
+mat4x4 === null ?
+[
+1, 0,   0,         0,
+0, 1,   0,         0,
+0, 0,   1,         0,
+0, 0,   0,         1
+]:
+mat4x4
+)
+}
+Ih(p) {
+this[12] = p[0]
+this[13] = p[1]
+this[14] = p[2]
+}
+Ii()  {
+return new Float32Array([this[12],this[13],this[14]])
+}
+Ij(rot/* matrice de taille 3x3 */) {
+for(var l = 0; l < 3; ++l) {
+for(var c = 0; c < 3; ++c) {
+this[l+4*c] = rot[l+3*c]
+}
+}
+}
+I0(Is) {
+var It = new Float32Array(3*3)
+for(var l = 0; l < 3; ++l) {
+for(var c = 0; c < 3; ++c){
+var ID = parseFloat(0)
+for(var k = 0; k < 3; ++k) {
+ID += this[l+4*k]*Is[k+3*c]
+}
+It[l+3*c] = ID
+}
+}
+this.Ij(It)
+}
+I1(Is) {
+var It = new Float32Array(3*3)
+for(var l = 0; l < 3; ++l) {
+for(var c = 0; c < 3; ++c){
+var ID = parseFloat(0)
+for(var k = 0; k < 3; ++k) {
+ID += Is[l+3*k]*this[k+4*c]
+}
+It[l+3*c] = ID
+}
+}
+this.Ij(It)
+}
+Ik(Iu) {
+var c = cos(Iu)
+var s = sin(Iu)
+this.I1(
+new Float32Array([
+1, 0, 0,
+0, c, s,
+0, -s, c,
+])
+)
+}
+Il(Iu) {
+var c = cos(Iu)
+var s = sin(Iu)
+this.I1(
+new Float32Array([
+c, 0, s,
+0, 1, 0,
+-s, 0, c,
+])
+)
+}
+Im() {
+var b = new Ir()
+for(var l = 0; l < 3; ++l) {
+for(var c = 0; c < 3; ++c) {
+b[l+4*c] = this[c+4*l];
+}
+}
+for(var l = 0; l < 3; ++l) {
+let ID = parseFloat(0)
+for(var k = 0; k < 3; ++k) {
+ID -= b[l+4*k]*this[k+4*3]
+}
+b[l+4*3] = ID
+}
+return b
+}
+In(p) {
+var r = new Float32Array(3)
+for(var l = 0; l < 3; ++l) {
+let ID = this[l+4*3]
+for(var k = 0; k < 3; ++k) {
+ID += this[l+4*k]*p[k]
+}
+r[l] = ID
+}
+return r
+}
+}
+Io = (mat4, vec4) => {
+var r = new Float32Array(4)
+for(var l = 0; l < 4; ++l) {
+let ID = parseFloat(0)
+for(var k = 0; k < 4; ++k) {
+ID += mat4[l+4*k]*vec4[k]
+}
+r[l] = ID
+}
+return r
+}
+translation = (d) => {
+return new Float32Array([
+1, 0, 0,  0,
+0, 1, 0,  0,
+0, 0, 1, 0,
+d[0], d[1], d[2], 1
+])
+}
+mult = (A, B) =>{
+R = new Float32Array([
+0, 0, 0, 0,
+0, 0, 0, 0,
+0, 0, 0, 0,
+0, 0, 0, 0
+])
+for(var l = 0; l < 4; ++l) {
+for(var c = 0; c < 4; ++c) {
+for(var k = 0; k < 4; ++k)
+R[l+4*c] += A[l+4*k]*B[k+4*c]
+}
+}
+return R
+}
+IF = (M, d) => {
+M[12] += d[0]
+M[13] += d[1]
+M[14] += d[2]
+}
+p = new Float32Array([0,0,0])
+IE = (M, d) => {
+R = new Float32Array(M)
+R[12] += d[0]
+R[13] += d[1]
+R[14] += d[2]
+return R
+}
+var vertShader = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vertShader,
+'precision mediump float;\
+attribute vec3 coordinates;\
+attribute vec4 colors;\
+uniform float t;\
+uniform mat4 P, M;\
+varying vec4 color;\
+varying vec3 pm;\
+void main(void) {\
+gl_Position = P*M*vec4(coordinates, 1.0);\
+pm = coordinates;\
+float a = cos(.5);\
+color = colors;\
+}');
+gl.compileShader(vertShader);
+var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fragShader,
+'precision mediump float;\
+varying vec4 color;\
+varying vec3 pm;\
+uniform float ombre;\
+void main(void) {\
+/*float depth = gl_FragDepth;*/\
+gl_FragColor = color;\
+gl_FragColor.rgb += 2.*(2.*ombre - 1.)*(.5-.16*length(pm));\
+}');
+gl.compileShader(fragShader);
+var shaderProgram = gl.createProgram();
+gl.attachShader(shaderProgram, vertShader);
+gl.attachShader(shaderProgram, fragShader);
+gl.linkProgram(shaderProgram);
+log_compilation_status = (shader) => {
+var compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+console.log('fragShader compiled successfully: ' + compiled);
+var compilationLog = gl.getShaderInfoLog(shader);
+console.log('Shader compiler log: ' + compilationLog);
+}
+log_compilation_status(fragShader)
+log_compilation_status(vertShader)
+gl.validateProgram(shaderProgram);
+if (!gl.getProgramParameter(shaderProgram, gl.VALIDATE_STATUS)) {
+throw new Exception('validation failed')
+}
+var emplacement_t = gl.getUniformLocation(shaderProgram, "t");
+var emplacement_P = gl.getUniformLocation(shaderProgram, "P");
+var emplacement_M = gl.getUniformLocation(shaderProgram, "M");
+var emplacement_ombre = gl.getUniformLocation(shaderProgram, "ombre");
+total_quantity = parseFloat(0)
+for (const e of input_data) total_quantity += e['quantity']
+for (const e of input_data) e['ratio'] = e['quantity']/total_quantity
+class Others_handler {
+constructor(slider_id = 'range_others_threshold') {
+this.original_input_data = undefined
+this.modified_input_data = undefined
+this._threshold = 0
+this.others = {
+name:'others',
+color: new Float32Array([Math.random(), Math.random(), Math.random(), 1])
+}
+const slider = document.getElementById(slider_id)
+slider.value = this._threshold
+const f = (e) => { this.threshold = Math.pow(slider.value, 4.6546) }
+slider.addEventListener("change", f)
+slider.addEventListener("input", f)
+}
+apply() {
+this.original_input_data = input_data
+this.modified_input_data = []
+this.others = {
+name: this.others.name,
+ratio: 0,
+quantity: 0,
+color: this.others.color
+}
+let count = 0
+for (const e of input_data) {
+if(e.ratio <= this._threshold) {
+count += 1
+this.others.ratio += e.ratio
+this.others.quantity += e.quantity
+}else{
+this.modified_input_data.push(e)
+}
+}
+this.modified_input_data.push(this.others)
+input_data = this.modified_input_data
+reset_color_pickers()
+}
+unapply() {
+input_data = (this.original_input_data ?? input_data)
+}
+set threshold(nval) {
+this._threshold = nval
+this.unapply()
+if(this._threshold > 0) {
+this.apply()
+}
+maj_pie()
+Iz()
+}
+get threshold() {
+return this._threshold
+}
+}
+const others_handler = new Others_handler()
+let input_data_is_sorted = false
+let non_sorted_input_data = null
+let sorted_input_data = null
+function switch_trier_input_data() {
+others_handler.unapply()
+non_sorted_input_data ??= input_data.slice() // clone
+sorted_input_data ??= input_data.slice() // clone
+input_data_is_sorted = !input_data_is_sorted
+if(input_data_is_sorted) {
+sorted_input_data.sort((a, b) => a.quantity - b.quantity)
+input_data = sorted_input_data
+}
+else{
+input_data = non_sorted_input_data
+}
+others_handler.apply()
+maj_pie()
+Iz()
+}
+/*Iv = 0// en tours
+_count = 0
+R = 4
+for (var e of input_data) {
+ratio = e['ratio']
+new_piece = I2(
+Iv,
+_count == input_data.length-1 ? 1 : Iv + ratio,// correct imprecisions for the last elm
+max(2, parseInt(ratio*100)),
+R,
+1,
+e['color']
+)
+e['color_index_range'] = [pie.colors.length/4, pie.colors.length/4 + new_piece.colors.length/4]
+pie.add(new_piece)
+my_Iv = 2*PI*(Iv + .5*ratio)
+R2 = 0.8*R
+e['pos'] = new Float32Array([R2*cos(my_Iv),R2*sin(my_Iv),0,1])
+Iv += ratio
+++_count
+}
+pie = pie.I4()*/
+pie = new I5()
+rayon = 4
+rayon_labels_coeff = 0.8
+hauteur = 1
+rayon_interne_ratio = .3
+class Value{
+constructor(val) {
+this.val = val
+}
+set(val) {
+this.val = val
+}
+get() {
+return this.val
+}
+}
+class Barres_params{
+constructor() {
+this.dx = new Value(1)
+this.dy = new Value(1)
+}
+}
+barres_params = new Barres_params()
+var Ig_type = 'pie'
+const maj_pie = () => {
+var cpu = new I3()
+Iv = 0// en tours
+_count = 0
+for (var e of input_data) {
+ratio = e['ratio']
+new_piece = null
+if(Ig_type == 'pie') {
+const my_Iv = 2*PI*(Iv + .5*ratio)
+new_piece = I2(
+Iv,
+_count == input_data.length-1 ? 1 : Iv + ratio,// correct imprecisions for the last elm
+max(2, parseInt(ratio*90)),
+rayon_interne_ratio*rayon,
+rayon,
+hauteur,
+e['color']
+)
+e['pos'] = new Float32Array([
+rayon_labels_coeff*rayon*cos(my_Iv),
+rayon_labels_coeff*rayon*sin(my_Iv),
+0,
+1
+])
+}
+else if (Ig_type == 'horizontal bars' || Ig_type == 'vertical bars') {
+var d_long = rayon/4
+var d_profond = rayon_interne_ratio/.3
+const x = parseFloat(_count-.5*input_data.length)*(4*rayon_separe_parts_coeff+d_long) - .5*d_long
+const y = -.5*d_profond
+max_ratio = 0.001
+for (var u of input_data) {
+max_ratio = parseFloat(max(max_ratio, u['ratio']))
+}
+const H_coeff = 13*hauteur
+const H = H_coeff*max_ratio
+if(Ig_type == 'horizontal bars') {
+new_piece = make_bar(
+-.5*H,
+x,
+y,
+ratio*H_coeff,
+d_long,
+d_profond,
+e['color']
+)
+e['pos'] = new Float32Array([
+(1.9*rayon_labels_coeff/2.5-.7)*H,
+x+.5*d_long,
+y,
+1
+])
+}
+else if(Ig_type == 'vertical bars') {
+new_piece = make_bar(
+x,
+-.5*H,
+y,
+d_long,
+ratio*H_coeff,
+d_profond,
+e['color']
+)
+e['pos'] = new Float32Array([
+x+.5*d_long,
+(1.9*rayon_labels_coeff/2.5-.7)*H,
+y,
+1
+])
+}
+}
+e['color_index_range'] = [cpu.colors.length/4, cpu.colors.length/4 + new_piece.colors.length/4]
+cpu.add(new_piece)
+Iv += ratio
+++_count
+}
+pie.set(cpu)
+}
+maj_pie()
+const switch_to_vertical_bars = () => {
+log('switch_to_bars')
+Ig_type = 'vertical bars'
+document.getElementById('nom_range_rayon').innerText = 'largeur'
+document.getElementById('nom_range_rayon_interne_ratio').innerText = 'profondeur'
+document.getElementById('nom_range_rayon_labels').innerText = 'position labels'
+maj_pie()
+Iz()
+}
+const switch_to_horizontal_bars = () => {
+log('switch_to_bars')
+Ig_type = 'horizontal bars'
+document.getElementById('nom_range_rayon').innerText = 'largeur'
+document.getElementById('nom_range_rayon_interne_ratio').innerText = 'profondeur'
+document.getElementById('nom_range_rayon_labels').innerText = 'rayon labels'
+maj_pie()
+Iz()
+}
+const switch_to_pie = () => {
+log('switch_to_pie')
+Ig_type = 'pie'
+document.getElementById('nom_range_rayon').innerText = 'rayon'
+document.getElementById('nom_range_rayon_interne_ratio').innerText = 'rayon_interne'
+document.getElementById('nom_range_rayon_labels').innerText = 'rayon labels'
+maj_pie()
+Iz()
+}
+const maj_bars = ()=>{
+}
+M = new Ir()
+var Ix = {90:false, 83:false, 81:false, 68:false, 67:false, 88:false};
+window.onkeyup = function(e) {
+if(e.keyCode in Ix) {
+Ix[e.keyCode] = false
+}
+}
+window.onkeydown = function(e) {
+log('keydown', e.keyCode)
+if(e.keyCode in Ix) {
+Ix[e.keyCode] = true
+Iz()
+}
+}
+range_separate_pieces = document.getElementById('range_separate_pieces')
+range_separate_pieces.value = rayon_separe_parts_coeff
+{
+var f = (e)=>{
+rayon_separe_parts_coeff = range_separate_pieces.value
+maj_pie()
+Iz()
+}
+range_separate_pieces.addEventListener("change", f)
+range_separate_pieces.addEventListener("input", f)
+}
+range_rayon = document.getElementById('range_rayon')
+range_rayon.value = rayon/parseFloat(2*4)
+{
+var f = (e)=>{
+rayon = 2*4*range_rayon.value
+maj_pie()
+Iz()
+}
+range_rayon.addEventListener("change", f)
+range_rayon.addEventListener("input", f)
+}
+range_hauteur = document.getElementById('range_hauteur')
+range_hauteur.value = hauteur/parseFloat(5)
+{
+var f = (e)=>{
+hauteur = 5*range_hauteur.value
+maj_pie()
+Iz()
+}
+range_hauteur.addEventListener("change", f)
+range_hauteur.addEventListener("input", f)
+}
+input_color_bg = document.getElementById('color_bg')
+input_color_bg.value = rgbToHex(255*bg[0], 255*bg[1], 255*bg[2])
+{
+var f = (e)=>{
+var c = hexToRgb(input_color_bg.value)
+bg.set([
+c[0]/255,
+c[1]/255,
+c[2]/255,
+1
+])
+Iz()
+}
+input_color_bg.addEventListener("change", f)
+input_color_bg.addEventListener("input", f)
+}
+input_range_bg_alpha = document.getElementById('range_bg_alpha')
+input_range_bg_alpha.value = bg[3]
+{
+var f = (e)=>{
+var alpha = input_range_bg_alpha.value
+bg.set([
+bg[0],
+bg[1],
+bg[2],
+alpha
+])
+Iz()
+}
+input_range_bg_alpha.addEventListener("change", f)
+input_range_bg_alpha.addEventListener("input", f)
+}
+range_rayon_interne_ratio = document.getElementById('range_rayon_interne_ratio')
+range_rayon_interne_ratio.value = rayon_interne_ratio
+{
+var f = (e)=>{
+rayon_interne_ratio = range_rayon_interne_ratio.value
+maj_pie()
+Iz()
+}
+range_rayon_interne_ratio.addEventListener("change", f)
+range_rayon_interne_ratio.addEventListener("input", f)
+}
+range_rayon_labels = document.getElementById('range_rayon_labels')
+range_rayon_labels.value = rayon_labels_coeff/2.5
+{
+var f = (e)=>{
+rayon_labels_coeff = 2.5*range_rayon_labels.value
+maj_pie()
+Iz()
+}
+range_rayon_labels.addEventListener("change", f)
+range_rayon_labels.addEventListener("input", f)
+}
+const range_ombre = document.getElementById('range_ombre')
+range_ombre.value = .7
+{
+function f(e) { Iz() }
+range_ombre.addEventListener("change", f)
+range_ombre.addEventListener("input", f)
+}
+class slider_value {
+constructor(id, initial_val = .5, mod = (val) => val) {
+this.elm = document.getElementById(id)
+this.elm.value = initial_val
+this.mod = mod
+var f = (e)=> {
+maj_pie()
+Iz()
+}
+this.elm.addEventListener("change", f)
+this.elm.addEventListener("input", f)
+}
+get val() {
+return this.mod(this.elm.value)
+}
+}
+taille_labels = new slider_value('range_taille_labels', .5, val => 2*val)
+voir_pourcentages = true
+checkbox_voir_pourcentages = document.getElementById('checkbox_voir_pourcentages')
+checkbox_voir_pourcentages.checked = voir_pourcentages
+switch_voir_pourcentages = () => {
+checkbox_voir_pourcentages.checked = voir_pourcentages = !voir_pourcentages
+maj_pie()
+Iz()
+}
+voir_qté = false
+checkbox_voir_qté = document.getElementById('checkbox_voir_qté')
+checkbox_voir_qté.checked = voir_qté
+switch_voir_qté = () => {
+checkbox_voir_qté.checked = voir_qté = !voir_qté
+maj_pie()
+Iz()
+}
+class Ip{
+constructor(){
+this.dx = 0
+this.dy = 0
+this.on_mouse_move = (e) => {
+this.dx = e.movementX * window.devicePixelRatio
+this.dy = e.movementY * window.devicePixelRatio
+Iz();
+}
+this.lors = false
+superposition.addEventListener('mousedown', (e) => { this.deb() });
+window.addEventListener('mouseup', (e) => { this.fin() });
+window.addEventListener('blur', (e) => { this.fin() });
+}
+deb(){
+if(this.lors) return
+this.lors = true
+window.addEventListener('mousemove', this.on_mouse_move);
+}
+fin(){
+if(!this.lors) return
+this.lors = false
+this.dx = 0
+this.dy = 0
+window.removeEventListener('mousemove', this.on_mouse_move)
+}
+}
+hold_clic = new Ip()
+p[2] = -9
+/*document.body.addEventListener('scroll', () => {
+log('scroll '+window.scrollX+' '+window.scrollY)
+lastKnownScrollPosition = window.scrollY;
+p[2] += window.scrollY;
+p[0] += window.scrollX;
+});*/
+var label = document.createElement('label');
+label.innerHTML = "something";    
+canvas.appendChild(label);
+dx = 0
+dy = 0
+window.addEventListener('blur', (event) => {
+for(key in Ix) Ix[key] = false
+});
+time_prev = parseFloat(0)
+draw_2d_rounded_rect = (
+x,
+y,
+width,
+height,
+radius = 5,
+fill = false,
+stroke = true
+) => {
+if (typeof radius === 'number') {
+radius = {tl: radius, tr: radius, br: radius, bl: radius};
+} else {
+radius = {...{tl: 0, tr: 0, br: 0, bl: 0}, ...radius};
+}
+Iy.beginPath();
+Iy.moveTo(x + radius.tl, y);
+Iy.lineTo(x + width - radius.tr, y);
+Iy.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+Iy.lineTo(x + width, y + height - radius.br);
+Iy.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+Iy.lineTo(x + radius.bl, y + height);
+Iy.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+Iy.lineTo(x, y + radius.tl);
+Iy.quadraticCurveTo(x, y, x + radius.tl, y);
+Iy.closePath();
+if (fill) Iy.fill();
+if (stroke) Iy.stroke();
+}
+update_I9 = (input) => {
+const color = input['color']
+const [i, j] = input['color_index_range']
+var colors = new Float32Array(4*(j - i))
+for(var k = 0; k < j-i; ++k) {
+colors[4*k+0] = color[0]
+colors[4*k+1] = color[1]
+colors[4*k+2] = color[2]
+colors[4*k+3] = color[3]
+}
+gl.bindBuffer(gl.ARRAY_BUFFER, pie.I9);
+gl.bufferSubData(gl.ARRAY_BUFFER, i*4*Float32Array.BYTES_PER_ELEMENT, colors, 0, colors.length);
+Iz()
+}
+let color_pickers = []
+function add_color_picker(e) {
+var color_picker = document.createElement('input')
+color = e['color']
+color_picker.type = 'color'
+color_picker.value = rgbToHex(round(255*color[0]), round(255*color[1]), round(255*color[2]))
+var f = (ev)=>{
+const selectedColor = ev.currentTarget.value
+const new_color = hexToRgb(selectedColor)
+var color = e['color']
+color[0] = parseFloat(new_color[0])/255
+color[1] = parseFloat(new_color[1])/255
+color[2] = parseFloat(new_color[2])/255
+color[3] = parseFloat(1)
+update_I9(e)
+}
+color_picker.addEventListener('change', f, false);
+color_picker.addEventListener('input', f, false);
+document.getElementById('superposition').append(color_picker)
+e['color_picker'] = color_picker
+color_pickers.push(color_picker)
+}
+function reset_color_pickers() {
+for(let e of color_pickers) { e.remove() }
+color_pickers = []
+for(let e of input_data) { add_color_picker(e) }
+}
+reset_color_pickers()
+Iq = (time) => {
+dt = 4*(time - time_prev)
+Iw = false
+/*if(Ix[90]) p[2] -= .0005*dt
+if(Ix[83]) p[2] += .0005*dt
+if(Ix[68]) p[0] += .0005*dt
+if(Ix[81]) p[0] -= .0005*dt
+if(Ix[67]) p[1] += .0005*dt
+if(Ix[88]) p[1] -= .0005*dt*/
+Iw =
+Ix[90] || Ix[83]
+|| Ix[68] || Ix[81]
+|| Ix[67] || Ix[88]
+M.Ih(p)
+if(hold_clic.dx) dx = hold_clic.dx
+else dx *= exp(-.001*dt)
+if(hold_clic.dy) dy = hold_clic.dy
+else dy *= exp(-.001*dt)
+if (projection_type == '3D') {
+M.Ik(.006*dy)
+M.Il(-.006*dx)
+}
+hold_clic.dy = 0
+hold_clic.dx = 0
+gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+gl.useProgram(shaderProgram);
+gl.uniform1f(emplacement_t, time);
+gl.uniformMatrix4fv(emplacement_P, false, P);
+gl.uniformMatrix4fv(emplacement_M, false, M);
+gl.uniform1f(emplacement_ombre, range_ombre.value);
+pie.Ig()
+time_prev = time
+let PM = mult(P, M)
+let p1_abs = new Float32Array([4,0,0])
+let p1 = Io(PM, new Float32Array([p1_abs[0], p1_abs[1], p1_abs[2], 1]))
+x = canvas_2d.width * .5* (p1[0]/p1[2] + 1)
+y = canvas_2d.height * (1 - .5 * (p1[1]/p1[2] + 1))
+Iy.clearRect(0, 0, canvas_2d.width, canvas_2d.height);
+char_h = taille_labels.val*min(20, .06*min(canvas_2d.width, canvas_2d.height))
+Iy.font = char_h + "px arial"
+Iy.lineWidth = 1
+Iy.textAlign = "center"
+Iy.textIrline = "middle"
+if(see_lables) {
+for (const e of input_data) {
+let pe = Io(PM, e['pos'])
+x = canvas_2d.width * .5* (pe[0]/pe[2] + 1)
+y = canvas_2d.height * (1 - .5 * (pe[1]/pe[2] + 1))
+color = e['color']
+name = e['name']
+qté = Math.round(e['quantity'] * 100) / 100
+percent = (100*e['ratio']).toFixed(0)+'%'
+Iy.textIrline = 'middle';
+Iy.textAlign = 'center';
+padding = 0.3*char_h
+hr = char_h
+if(voir_pourcentages) hr += char_h
+if(voir_qté) hr += char_h
+hr += padding
+wr = Iy.measureText(name).width
+if(voir_pourcentages) wr = max(wr, Iy.measureText(percent).width)
+if(voir_qté) wr = max(wr, Iy.measureText(qté).width)
+wr += padding
+Iy.save()
+is_dark = (color[0] + color[1] + color[2] < .5)
+Lc = sqrt(color[0]**2 + color[1]**2 + color[2]**2)
+cn = Lc > .0001 ? new Float32Array([color[0]/Lc, color[1]/Lc, color[2]/Lc]) : new Float32Array([0.577350, 0.577350, 0.577350])
+coef_border = is_dark ? .2 : -.2
+Iy.strokeStyle = 'rgba('+(color[0]+coef_border*cn[0])*255+','+(color[1]+coef_border*cn[1])*255+','+(color[2]+coef_border*cn[2])*255+','+color[3]+')'
+eps = .05
+Iy.lineWidth = min(max(eps*wr, eps*hr), 3.)
+draw_2d_rounded_rect(x - .5*wr, y - .5*hr, wr, hr, .5*char_h, false, true)
+Iy.fillStyle = 'rgba('+color[0]*255+','+color[1]*255+','+color[2]*255+','+color[3]+')'
+draw_2d_rounded_rect(x - .5*wr, y - .5*hr, wr, hr, .5*char_h, true, false)
+Iy.restore()
+if(is_dark){
+Iy.fillStyle = Iy.strokeStyle = "rgba(245,254,245,.9)"
+}else{
+Iy.fillStyle = Iy.strokeStyle = "rgba(1,1,1,.9)"
+}
+var txt_dy = char_h
+var txt_nb_lines = 1 + voir_pourcentages + voir_qté
+var txt_y = y + .25*char_h - .5*(txt_nb_lines-1)*txt_dy
+Iy.fillText(name, x, txt_y)
+txt_y += txt_dy
+if(voir_pourcentages) {
+Iy.fillText(percent, x, txt_y)
+txt_y += txt_dy
+}
+if(voir_qté) Iy.fillText(qté, x, txt_y)
+color_picker = e['color_picker']
+color_picker.style=`position:absolute;left:${round(x-.5*wr)}px;top:${round(y-.5*hr)}px;width:${round(wr)}px;height:${round(hr)}px;opacity:0;`
+}
+} else {// see_labels == false
+for (const e of input_data) {
+e.color_picker.style.visibility = 'hidden'
+e.color_picker.style.pointerEvents = 'none'
+}
+}
+IA = false
+if(Iw || abs(dx) >= .01 && abs(dy) >= .01) {
+Iz();
+}
+/*if(!done) {
+var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+window.location.href = image;
+}*/
+if(save_image_after_next_render) {
+save_image_after_next_render = false
+var png_canvas = document.createElement('canvas')
+png_canvas.clientWidth = canvas.clientWidth
+png_canvas.clientWidth = canvas.clientHeight
+png_canvas.width = canvas.width
+png_canvas.height = canvas.height
+var png_Iy = png_canvas.getContext('2d');
+png_Iy.drawImage(canvas, 0, 0);
+if(see_lables) png_Iy.drawImage(canvas_2d, 0, 0);
+var image = png_canvas.toDataURL("image/png").replace("image/png", "image/octet-stream")
+function download_image(image, name = 'image.png') {
+const a = document.createElement('a')
+a.href = image
+a.download = name
+document.body.appendChild(a)
+a.click()
+document.body.removeChild(a)
+}
+download_image(image)
+}
+}
+done = false
+IA = false
+Iz = () => {
+if(!IA) {
+IA = true
+window.requestAnimationFrame(Iq);
+}
+}
+see_lables = true
+switch_see_labels = () => {
+see_lables = !see_lables
+document.getElementById('checkbox_see_labels').checked = see_lables
+Iz()
+}
+save_image_after_next_render = false
+save_image = () => {
+save_image_after_next_render = true
+Iz()
+}
+randomise_colors = () => {
+for(var e of input_data) {
+e['color'] = new Float32Array([Math.random(),Math.random(),Math.random(),1])
+update_I9(e)
+}
+Iz()
+}
+var projection_type = '3D'
+const switch_projection_matrix = () => {
+if (projection_type == '2D') {
+projection_type = '3D'
+}else {
+dx = 0
+dy = 0
+M.Ij([1,0,0, 0,1,0, 0,0,1])
+projection_type = '2D'
+}
+IB()
+}
+IB = () => {
+IC(gl.canvas);
+IC(canvas_2d);
+w = gl.canvas.width
+h = gl.canvas.height
+IH = parseFloat(w)/parseFloat(h)
+fov = Math.PI/3
+a = parseFloat(1)/Math.tan(fov/2)
+far = parseFloat(1000)
+II = parseFloat(.1)
+if (projection_type == '3D') {
+P = new Float32Array([
+a/IH,0,0,0,
+0,a,0,0,
+0,0,-(II+far)/(far-II),-1,
+0,0,-2*far*II/(far-II),0
+])
+/*IG = new Float32Array([
+IH/a,0,0,0,
+0,parseFloat(1)/a,0,0,
+0,0,0,(II-far)/(2*far*II),
+0,0,-1,(II+far)/(2*far*II),
+])*/
+}
+else {
+const h1 = 2*Math.sqrt(p[0]**2 + p[1]**2 + p[2]**2)*Math.tan(fov/2)
+/*P = new Float32Array([
+2/h1/IH,0,0,0,
+0,2/h1,0,0,
+0,0,-1.0/(far-II),0,
+0,0,-II/(far-II),1
+])*/
+/*P = new Float32Array([
+-2/h1/IH,0,0,0,
+0,-2/h1,0,0,
+0,0,1.0/(far-II),0,
+0,0,1,1
+])*/
+/*P = new Float32Array([
+2/h1/IH,0,0,0,
+0,2/h1,0,0,
+0,0,-1.0/(far-II),0,
+0,0,-1,1
+])*/
+P = new Float32Array([
+2/h1/IH,0,0,0,
+0,2/h1,0,0,
+0,0,1.0/(far-II),0,
+0,0,1,1
+])
+}
+IC(gl.canvas);
+gl.viewport(0, 0, w, h);
+Iz();
+}
+IB()
+window.addEventListener("resize", ()=>{IB()}, true);
+Iz();
+
+		</script>
+		<script >
+			
+			
+			
+			const scale_options_on_top = .08;
+			
+			
+			const _list_fade_out_callbacks = []
+			
+			var cursor_on_options_on_tops = false
+			
+			
+			const fade_out_if_cursor_does_not_move = (elm) => {
+			
+				var fade_timeout = null
+				var fade = null
+			
+				var callback = () => {
+			
+					elm.style.opacity = "1";
+			
+					if(fade_timeout !== null) clearTimeout(fade_timeout)
+			
+					fade_timeout = setTimeout(
+						()=>{
+							if(cursor_on_options_on_tops) return
+							if(fade !== null) clearInterval(fade);
+							fade = setInterval(() => {
+								//log('FADING')
+								elm.style.opacity = Math.max(0, elm.style.opacity-.015)
+								if (elm.style.opacity <= 0) {
+									clearInterval(fade)
+									fade = null
+								}
+							},
+							10
+						)
+						},
+						900
+					)
+				}
+			
+				_list_fade_out_callbacks.push(callback)
+			
+				window.addEventListener('mousemove', callback, false)
+			}
+			
+			
+			const apply_style_of_btn_options_on_top = (btn, f_click=()=>{console.log('click options_on_top')}) => {
+				btn.style.position = 'absolute'
+				btn.style.top = '40px'
+				btn.style.left = '40px'
+				btn.style.cursor = 'pointer'
+				btn.style['background-color'] = 'rgb(255, 255, 255, .2)'
+				btn.addEventListener('click', f_click)
+				fade_out_if_cursor_does_not_move(btn)
+			
+				btn.addEventListener('mouseenter', (ev) => {
+					cursor_on_options_on_tops = true
+				})
+				btn.addEventListener('mouseleave', (ev) => {
+					cursor_on_options_on_tops = false
+				})
+			}
+			
+			
+			const make_options_on_top = (
+				sup,
+				f_click_btn_switch_to_bars = ()=>{console.log('f_click_btn_switch_to_bars')},
+				f_click_btn_switch_to_horizontal_bars = ()=>console.log('f_click_btn_switch_to_horizontal_bars'),
+				f_click_btn_switch_to_pie = ()=>{console.log('f_click_btn_switch_to_pie')},
+				f_click_btn_photo = ()=>{console.log('f_click_btn_photo')},
+				f_click_btn_switch_projection_matrix = ()=>{console.log('f_click_btn_switch_projection_matrix')},
+			) => {
+			
+				sup.style.position = 'relative'
+			
+				{// btn_switch_to_bars
+			
+					const btn_switch_to_bars = document.createElement('canvas')
+					apply_style_of_btn_options_on_top(btn_switch_to_bars, f_click_btn_switch_to_bars)
+					sup.appendChild(btn_switch_to_bars)
+			
+					const maj_btn_switch_to_bars = () => {
+			
+						console.log('maj_btn_switch_to_bars ' + window.innerWidth + ' ' + window.innerHeight)
+						const ctx = btn_switch_to_bars.getContext('2d')
+						const client_size = scale_options_on_top*Math.min(window.innerWidth, window.innerHeight)
+						btn_switch_to_bars.clientWidth = client_size
+						btn_switch_to_bars.clientHeight = client_size
+						const size = window.devicePixelRatio * client_size
+						const w = btn_switch_to_bars.width = size
+						const h = btn_switch_to_bars.height = size
+						btn_switch_to_bars.style.top = .2*size + 'px'
+						btn_switch_to_bars.style.left = .2*size + 'px'
+						btn_switch_to_bars.style['border-radius'] = .2*size + 'px'
+			
+			
+						
+						const nb_bar = 4.0
+			
+						const size_inner = .7*size
+			
+						const padding = .5*(size-size_inner)
+						
+						const ecart = .15*size_inner/nb_bar
+			
+						const w_bar = size_inner/nb_bar - 2*ecart
+			
+						for(var c = 0; c < nb_bar; ++c) {
+							const x = padding + c*(w_bar + 2*ecart) + ecart
+							const X = x + w_bar
+							const y = padding + Math.random()*size_inner
+							const Y = padding + size_inner
+			
+							const run_path = () => {
+								ctx.beginPath()
+								ctx.moveTo(x, y)
+								ctx.lineTo(x, Y)
+								ctx.lineTo(X, Y)
+								ctx.lineTo(X, y)
+								ctx.closePath()
+							}
+			
+							const color =
+								[
+									parseInt(255*Math.random()),
+									parseInt(255*Math.random()),
+									parseInt(255*Math.random()),
+								]
+			
+							run_path()
+							ctx.lineWidth = .03*size
+							ctx.strokeStyle = 'rgb('+.4*color[0]
+												+','+.4*color[1]
+												+','+.4*color[2]
+												+')'
+							ctx.stroke()
+			
+			
+							run_path()
+							ctx.fillStyle = 'rgb('+color[0]
+												+','+color[1]
+												+','+color[2]
+												+')'
+							ctx.fill()
+						}
+			
+					}
+					maj_btn_switch_to_bars()
+					window.addEventListener('resize', maj_btn_switch_to_bars, true);
+			
+				}
+			
+			
+			
+				{// btn_switch_to_horizontal_bars
+			
+					const btn_switch_to_horizontal_bars = document.createElement('canvas')
+					apply_style_of_btn_options_on_top(btn_switch_to_horizontal_bars, f_click_btn_switch_to_horizontal_bars)
+					sup.appendChild(btn_switch_to_horizontal_bars)
+			
+					const maj_btn_switch_to_horizontal_bars = () => {
+			
+						console.log('maj_btn_switch_to_horizontal_bars ' + window.innerWidth + ' ' + window.innerHeight)
+						const ctx = btn_switch_to_horizontal_bars.getContext('2d')
+						const client_size = scale_options_on_top*Math.min(window.innerWidth, window.innerHeight)
+						btn_switch_to_horizontal_bars.clientWidth = client_size
+						btn_switch_to_horizontal_bars.clientHeight = client_size
+						const size = window.devicePixelRatio * client_size
+						const w = btn_switch_to_horizontal_bars.width = size
+						const h = btn_switch_to_horizontal_bars.height = size
+						btn_switch_to_horizontal_bars.style.top = .2*size + 'px'
+						btn_switch_to_horizontal_bars.style.left = (.2 + 1 +.2)*size + 'px'
+						btn_switch_to_horizontal_bars.style['border-radius'] = .2*size + 'px'
+			
+			
+						
+						const nb_bar = 4.0
+			
+						const size_inner = .7*size
+			
+						const padding = .5*(size-size_inner)
+						
+						const ecart = .15*size_inner/nb_bar
+			
+						const w_bar = size_inner/nb_bar - 2*ecart
+			
+						for(var c = 0; c < nb_bar; ++c) {
+							const x = padding + c*(w_bar + 2*ecart) + ecart
+							const X = x + w_bar
+							const y = padding + Math.random()*size_inner
+							const Y = padding + size_inner
+			
+							const run_path = () => {
+								ctx.beginPath()
+								ctx.moveTo(size - y, x)
+								ctx.lineTo(size - Y, x)
+								ctx.lineTo(size - Y, X)
+								ctx.lineTo(size - y, X)
+								ctx.closePath()
+							}
+			
+							const color =
+								[
+									parseInt(255*Math.random()),
+									parseInt(255*Math.random()),
+									parseInt(255*Math.random()),
+								]
+			
+							run_path()
+							ctx.lineWidth = .03*size
+							ctx.strokeStyle = 'rgb('+.4*color[0]
+												+','+.4*color[1]
+												+','+.4*color[2]
+												+')'
+							ctx.stroke()
+			
+			
+							run_path()
+							ctx.fillStyle = 'rgb('+color[0]
+												+','+color[1]
+												+','+color[2]
+												+')'
+							ctx.fill()
+						}
+			
+					}
+					maj_btn_switch_to_horizontal_bars()
+					window.addEventListener('resize', maj_btn_switch_to_horizontal_bars, true)
+			
+				}
+			
+			
+				{//btn_switch_to_pie
+			
+					const btn_switch_to_pie = document.createElement('canvas')
+					apply_style_of_btn_options_on_top(btn_switch_to_pie, f_click_btn_switch_to_pie)
+			
+					sup.appendChild(btn_switch_to_pie)
+					
+					const newton = (
+							f /* from x,y to scalar */,
+							x_start,
+							y_start,
+							dist_to_zero_break,
+							nb_loops_max = 200
+						) => {
+							
+							var x = x_start
+							var y = y_start
+							
+							for(var c = 0; c < nb_loops_max; ++c) {
+			
+								const fxy = f(x,y)
+			
+								if (Math.abs(fxy) <= dist_to_zero_break) {
+									break
+								}
+			
+								const dx = .0001
+								const dy = .0001
+								
+			
+								var df_x = f(x+.5*dx,y) - f(x-.5*dx,y)
+								var df_y = f(x,y+.5*dy) - f(x,y-.5*dy)
+								const df_min = .5*dist_to_zero_break
+			
+								/*dfx_sur_dx = df_x/dx
+								dfy_sur_dy = df_y/dy*/
+								
+								if (Math.abs(df_x) < df_min) df_x = (df_x > 0 ? 1 : -1)*df_min
+								if (Math.abs(df_y) < df_min) df_y = (df_y > 0 ? 1 : -1)*df_min
+			
+								x -= .5*(dx/df_x)*fxy
+								y -= .5*(dy/df_y)*fxy
+			
+								/*x -= .5*fxy/dfx_sur_dx
+								y -= .5*fxy/dfy_sur_dy*/
+							}
+			
+							return [x, y]
+						}
+			
+			
+						const maj_btn_switch_to_pie = () => {
+							console.log('maj_btn_switch_to_pie ' + window.innerWidth + ' ' + window.innerHeight)
+							const ctx = btn_switch_to_pie.getContext('2d')
+							const client_size = scale_options_on_top*Math.min(window.innerWidth, window.innerHeight)
+							btn_switch_to_pie.clientWidth = client_size
+							btn_switch_to_pie.clientHeight = client_size
+							const size = window.devicePixelRatio * client_size
+							const w = btn_switch_to_pie.width = size
+							const h = btn_switch_to_pie.height = size
+							btn_switch_to_pie.style.top = (1.+.2+.2)*size + 'px'
+							btn_switch_to_pie.style.left = .2*size + 'px'
+							btn_switch_to_pie.style['border-radius'] = .2*size + 'px'
+			
+							const nb_bar = 5.0
+			
+							var quatities = []
+							var total_quatity = parseFloat(0)
+							for(var c = 0; c < nb_bar; ++c) {
+								quatity = Math.max(Math.random(), .01)
+								total_quatity += quatity
+								quatities.push(quatity)
+							}
+							var ponds = []
+			
+							for(var c = 0; c < nb_bar; ++c) {
+								ponds.push(quatities[c]/total_quatity)
+							}
+			
+							const size_inner = .7*size
+			
+							const padding = .5*(size-size_inner)
+							
+							const ecart = .09*2*Math.PI/nb_bar
+			
+							//const da = 2*Math.PI/nb_bar - 2*ecart
+							const da = 2*Math.PI
+			
+							//var a = Math.random()*2*Math.PI
+							var a = 0
+			
+							const R = .5*size_inner
+							const cx = .5*w
+							const cy = .5*h
+			
+							// intersection de deux droites qui marche même si parallèle
+							const f_intersection = (
+								x1,
+								y1,
+								// d1 doit être unitaire
+								dx1,
+								dy1,
+			
+								x2,
+								y2,
+								// d2 doit être unitaire
+								dx2,
+								dy2,
+			
+								/*dist_stop,
+								nb_max_iter = 100*/
+							) => {
+			
+								const dist_for_intersection_to_nullify = (x, y) => {
+									const dist1 = Math.abs((x-x1)*dy1 - (y-y1)*dx1)
+									const dist2 = Math.abs((x-x2)*dy2 - (y-y2)*dx2)
+									return Math.max(dist1, dist2)
+								}
+			
+								return dist_for_intersection_to_nullify
+								
+								/*
+								plus ange faible, le plus d'itération sont necessaires
+								probleme si angle 
+								for(var c = 0; c < nb_max_iter; ++c) {
+			
+									// milieu
+									const x = .5*(x1+x2)
+									const y = .5*(y1+y2)
+			
+									// distance du milieu à droite 1
+									const dist1 = Math.abs((x-x1)*dy1 - (y-y1)*dx1)
+			
+									// distance du milieu à droite 2
+									const dist2 = Math.abs((x-x2)*dy2 - (y-y2)*dx2)
+			
+									if (Math.max(dist1, dist2) < dist_stop) {
+										break
+									}
+			
+									// p1 = projeter milieu sur 1
+									const scalar1 = (x-x1)*dx1 + (y-y1)*dy1
+									x1 = x1 + scalar1*dx1
+									y1 = y1 + scalar1*dy1
+			
+									// p2 = projeter milieu sur 2
+									const scalar2 = (x-x2)*dx2 + (y-y2)*dy2
+									x2 = x2 + scalar2*dx2
+									y2 = y2 + scalar2*dy2
+								}
+								
+								return [.5*(x1+x2),.5*(y1+y2)]
+								*/
+							}
+			
+							for(var c = 0; c < nb_bar; ++c) {
+								//const a = c*(da + 2*ecart) + ecart
+								//const a = c*da
+								const A = Math.min(a + 2*Math.PI*ponds[c], 2*Math.PI)
+								const y = padding + Math.random()*size_inner
+								const Y = padding + size_inner
+			
+								const run_path = () => {
+									ctx.beginPath()
+									
+									const da = A-a
+									const a_padding = Math.min(.09*da, .018*2*Math.PI)
+									//if (da < Math.PI)
+									{
+										
+										//const r = .05*size_inner
+			
+										/*const ua = [
+											R*Math.cos(a),
+											R*Math.sin(a)
+										]
+			
+										const uA = [
+											R*Math.cos(A),
+											R*Math.sin(A)
+										]
+			
+										const i = intersection(
+			
+											R*Math.cos(a+a_padding),
+											R*Math.sin(a+a_padding),
+											Math.cos(a),
+											Math.sin(a),
+			
+											R*Math.cos(A-a_padding),
+											R*Math.sin(A-a_padding),
+											Math.cos(A),
+											Math.sin(A),
+			
+											.01
+										)*/
+			
+										const i = newton(
+											f_intersection(
+			
+												R*Math.cos(a+a_padding),
+												R*Math.sin(a+a_padding),
+												Math.cos(a),
+												Math.sin(a),
+			
+												R*Math.cos(A-a_padding),
+												R*Math.sin(A-a_padding),
+												Math.cos(A),
+												Math.sin(A),
+			
+												//.01
+											),
+											0,
+											0,
+											.01,
+											200
+										)
+			
+										//console.log(i)
+			
+										//const u1 = .1
+										
+										const r = 2.*R*a_padding*Math.cos(da/2.)
+										//const x = .5*w + r*Math.cos(.5*(a+A))
+										const x = .5*w + i[0]
+										//const y = .5*h + r*Math.sin(.5*(a+A))
+										const y = .5*h + i[1]
+										ctx.moveTo(x,y)
+										//ctx.arc(x, y, R, a+a_padding, A-a_padding, false)
+										ctx.arc(cx, cy, R, a+a_padding, A-a_padding, false)
+										//ctx.arc(.5*w, .5*h, .2*R, A-a_padding, a+a_padding, true)
+									}
+									/*else{
+										const x = .5*w
+										const y = .5*h
+										ctx.moveTo(x,y)
+										//ctx.arc(x, y, R, a+a_padding, A-a_padding, false)
+										ctx.arc(x, y, R, a+a_padding, A-a_padding, false)
+									}*/
+									
+									ctx.closePath()
+								}
+			
+								run_empty_circle = ()=>{
+									ctx.beginPath()
+									ctx.arc(cx, cy, .4*R, 0, 2*Math.PI, false)
+									ctx.closePath()
+								}
+			
+								const color =
+									[
+										parseInt(255*Math.random()),
+										parseInt(255*Math.random()),
+										parseInt(255*Math.random()),
+									]
+			
+								
+								run_path()
+								ctx.lineWidth = .03*size
+								ctx.lineCap = 'butt'
+								ctx.strokeStyle = 'rgb('+.4*color[0]
+													+','+.4*color[1]
+													+','+.4*color[2]
+													+')'
+								ctx.stroke()
+			
+			
+								run_path()
+								ctx.fillStyle = 'rgb('+color[0]
+													+','+color[1]
+													+','+color[2]
+													+')'
+								ctx.fill()
+			
+								
+			
+								a = A
+							}
+			
+							run_empty_circle()
+							//ctx.globalAlpha = 0;
+							
+							ctx.globalCompositeOperation = 'destination-out'
+							ctx.fillStyle = 'rgba(0,0,0,1)'
+							ctx.fill()
+							//ctx.globalAlpha = 1.;
+							ctx.globalCompositeOperation = "source-over" // reset default
+			
+						}
+						maj_btn_switch_to_pie()
+						window.addEventListener('resize', maj_btn_switch_to_pie, true);
+			
+				}
+			
+			
+			
+				{ // btn_photo
+			
+					const btn_photo = document.createElement('canvas')
+					apply_style_of_btn_options_on_top(btn_photo, f_click_btn_photo)
+					sup.appendChild(btn_photo)
+			
+					const maj_btn_photo = () => {
+			
+						const ctx = btn_photo.getContext('2d')
+						const client_size = scale_options_on_top*Math.min(window.innerWidth, window.innerHeight)
+						btn_photo.clientWidth = client_size
+						btn_photo.clientHeight = client_size
+						const size = window.devicePixelRatio * client_size
+						const w = btn_photo.width = size
+						const h = btn_photo.height = size
+						btn_photo.style.top = (1.+.2+.2+1.+.2)*size + 'px'
+						btn_photo.style.left = .2*size + 'px'
+						btn_photo.style['border-radius'] = .2*size + 'px'
+			
+			
+			
+						const size_inner = .7*size
+						const padding = .5*(size - size_inner)
+						const h_ap = .7*size_inner
+						const w_ap = size_inner
+						const x = .5*(size - w_ap)
+						const X = x + w_ap
+						const cx = .5*(x+X)
+						const y = .5*(size - h_ap)
+						const Y = y + h_ap
+						const cy = .5*(y+Y)
+			
+			
+						const run_rec = () => {
+							ctx.beginPath()
+							ctx.moveTo(x, y)
+							ctx.lineTo(x, Y)
+							ctx.lineTo(X, Y)
+							ctx.lineTo(X, y)
+							const d1 = .2*w_ap
+							const d2 = .05*w_ap
+							const dy = .12*size_inner
+							ctx.lineTo(X-d1,y)
+							ctx.lineTo(X-d1-d2,y-dy)
+							ctx.lineTo(x+d1+d2,y-dy)
+							ctx.lineTo(x+d1,y)
+							ctx.closePath()
+						}
+			
+						
+			
+						run_rec()
+						ctx.fillStyle = 'rgba(20,20,20,1)'
+						ctx.fill()
+			
+			
+						line_width = .04*size
+			
+						const run_circle = () => {
+							ctx.beginPath()
+							ctx.arc(cx, cy, .41*Math.min(h_ap, h_ap) - .5*line_width, 0, 2*Math.PI, false)
+							ctx.closePath()
+						}
+			
+						run_circle()
+						ctx.lineWidth = line_width
+						ctx.strokeStyle = 'rgba(255,255,255,.4)'
+						ctx.stroke()
+			
+					}
+			
+					maj_btn_photo()
+					
+					window.addEventListener('resize', maj_btn_photo, true)
+				}
+			
+			
+				{ // btn_switch_projection_matrix
+			
+					const btn_switch_projection_matrix = document.createElement('canvas')
+					
+					sup.appendChild(btn_switch_projection_matrix)
+					var projection = '3D'
+			
+					
+			
+					const maj_btn_switch_projection_matrix = () => {
+			
+						const ctx = btn_switch_projection_matrix.getContext('2d')
+						const client_size = scale_options_on_top*Math.min(window.innerWidth, window.innerHeight)
+						btn_switch_projection_matrix.clientWidth = client_size
+						btn_switch_projection_matrix.clientHeight = client_size
+						const size = window.devicePixelRatio * client_size
+						const w = btn_switch_projection_matrix.width = size
+						const h = btn_switch_projection_matrix.height = size
+						btn_switch_projection_matrix.style.top = (.2 + 1 + .2 + 1 + .2 + 1 + .2)*size + 'px'
+						btn_switch_projection_matrix.style.left = .2*size + 'px'
+						btn_switch_projection_matrix.style['border-radius'] = .2*size + 'px'
+			
+						
+						ctx.font = .7*size + 'px serif'
+						const mes = ctx.measureText(projection)
+						ctx.fillText(projection, .5*(size-mes.width), .74*size)
+					}
+			
+					apply_style_of_btn_options_on_top(btn_switch_projection_matrix, (ev) => {
+						f_click_btn_switch_projection_matrix(ev)
+						if(projection == '3D') {
+							projection = '2D'
+						} else{
+							projection = '3D'
+						}
+						maj_btn_switch_projection_matrix()
+					})
+			
+					maj_btn_switch_projection_matrix()
+			
+			
+			
+					window.addEventListener('resize', maj_btn_switch_projection_matrix, true)
+			
+					
+			
+					
+				}
+			
+			
+			}
+			
+			
+		</script>
+		<script >
+			
+						make_options_on_top(
+							document.getElementById('superposition'),
+							switch_to_vertical_bars,
+							switch_to_horizontal_bars,
+							switch_to_pie,
+							save_image,
+							switch_projection_matrix
+						)
+						
+		</script>
+	</body>
+</html>

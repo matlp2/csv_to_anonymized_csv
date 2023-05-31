@@ -1,0 +1,134 @@
+{
+    "elms": [
+        {
+            "type": "csv",
+            "header": [
+                "nom",
+                "co\u00fbt"
+            ],
+            "private": true,
+            "tumult_source_id": "test_pie_csv",
+            "src": {
+                "txt": null,
+                "path": "/home/matlepape/rudi/test des gits/csv_to_anonymized_csv/csv examples/test_pie.csv",
+                "delimiter": ";",
+                "spark_dataframe_successfully_loaded": true
+            },
+            "requests": [
+                {
+                    "group_by": {
+                        "column": "nom"
+                    },
+                    "function": "sum",
+                    "function_infos": {
+                        "nb_columns_min": 1,
+                        "nb_columns_max": 1,
+                        "parameters": [
+                            "column",
+                            "low",
+                            "high"
+                        ],
+                        "group_by_allowed": true,
+                        "positive_result_default_value": false
+                    },
+                    "columns": [
+                        "co\u00fbt"
+                    ],
+                    "clamp_range": [
+                        1000.0,
+                        125100.0
+                    ],
+                    "clamp_range_prev": null,
+                    "quantile": null,
+                    "quantile_prev": null,
+                    "make_result_positive": false,
+                    "make_result_positive_set_by_user": false,
+                    "budget_privacy_ponderation": 1,
+                    "filter": null,
+                    "more_options_expanded": false,
+                    "responses": [
+                        {
+                            "type": "message",
+                            "message": "anonymised request",
+                            "subs": [
+                                {
+                                    "type": "message",
+                                    "message": "privacy budget used for this request: 0.099999999",
+                                    "must_be_removed_on_reload": true
+                                },
+                                {
+                                    "type": "path",
+                                    "expanded": true,
+                                    "path": "file:///home/matlepape/rudi/test des gits/csv_to_anonymized_csv/data/result/test_pie_csv_co\u00fbt_sum_by_nom.csv",
+                                    "something": "DataFrame[nom: string, co_t_sum: bigint]",
+                                    "must_be_removed_on_reload": true
+                                }
+                            ],
+                            "must_be_removed_on_reload": true
+                        },
+                        {
+                            "type": "expand_able",
+                            "expanded": false,
+                            "title": "more results",
+                            "subs": [
+                                {
+                                    "type": "message",
+                                    "message": "non anonymised sql query: (clamp min/max are not applied)<br><br><p style = 'font-family:sans-serif,georgia,garamond,serif;margin:.5em;padding:.5em;background-Color:rgba(0,0,0,.1);'>SELECT nom, SUM(cout) <br>FROM test_pie_csv <br>GROUP BY nom</p>",
+                                    "subs": [
+                                        {
+                                            "type": "error",
+                                            "title": "non anonymised request failed (if you don't care about the non-anonymised result, this error does not matter).",
+                                            "expanded": false,
+                                            "exception": "Column 'cout' does not exist. Did you mean one of the following? [test_pie_csv.co_t, test_pie_csv.nom]; line 1 pos 16;\n'Aggregate [nom#225], [nom#225, unresolvedalias('SUM('cout), None)]\n+- SubqueryAlias test_pie_csv\n   +- View (`test_pie_csv`, [nom#225,co_t#228])\n      +- Project [nom#225, co_t#112 AS co_t#228]\n         +- Project [nom#111 AS nom#225, co_t#112]\n            +- Project [nom#107 AS nom#111, co\u00fbt#108 AS co_t#112]\n               +- Relation [nom#107,co\u00fbt#108] csv\n",
+                                            "traceback": "Traceback (most recent call last):\n  File \"serveur.py\", line 1233, in start_tumult_session\n    result_non_anonymised = execute_sql_request_without_anonymisation(\n  File \"serveur.py\", line 248, in execute_sql_request_without_anonymisation\n    spark_dataframe_result = spark_session.sql(sql_request)\n  File \"/home/matlepape/rudi/test des gits/env/lib/python3.8/site-packages/pyspark/sql/session.py\", line 1034, in sql\n    return DataFrame(self._jsparkSession.sql(sqlQuery), self)\n  File \"/home/matlepape/rudi/test des gits/env/lib/python3.8/site-packages/py4j/java_gateway.py\", line 1321, in __call__\n    return_value = get_return_value(\n  File \"/home/matlepape/rudi/test des gits/env/lib/python3.8/site-packages/pyspark/sql/utils.py\", line 196, in deco\n    raise converted from None\npyspark.sql.utils.AnalysisException: Column 'cout' does not exist. Did you mean one of the following? [test_pie_csv.co_t, test_pie_csv.nom]; line 1 pos 16;\n'Aggregate [nom#225], [nom#225, unresolvedalias('SUM('cout), None)]\n+- SubqueryAlias test_pie_csv\n   +- View (`test_pie_csv`, [nom#225,co_t#228])\n      +- Project [nom#225, co_t#112 AS co_t#228]\n         +- Project [nom#111 AS nom#225, co_t#112]\n            +- Project [nom#107 AS nom#111, co\u00fbt#108 AS co_t#112]\n               +- Relation [nom#107,co\u00fbt#108] csv\n\n",
+                                            "must_be_removed_on_reload": true
+                                        }
+                                    ],
+                                    "must_be_removed_on_reload": true
+                                }
+                            ],
+                            "must_be_removed_on_reload": true
+                        }
+                    ]
+                }
+            ],
+            "responses": [],
+            "sample": {
+                "random": {
+                    "percent": 100,
+                    "responses": []
+                },
+                "result": {},
+                "expanded": false,
+                "remove_lines_with_null_or_NaN_cells": {
+                    "columns": [],
+                    "responses": []
+                },
+                "trim": {
+                    "min": {
+                        "percent": 0,
+                        "columns": [],
+                        "responses": []
+                    },
+                    "max": {
+                        "percent": 0,
+                        "columns": [],
+                        "responses": []
+                    },
+                    "responses": []
+                },
+                "interquartile_range": {
+                    "columns": [],
+                    "responses": []
+                },
+                "standard_deviation": {
+                    "columns": [],
+                    "responses": []
+                }
+            }
+        }
+    ],
+    "scroll_x": 0,
+    "scroll_y": 0,
+    "privacy_budget": 0.1
+}
